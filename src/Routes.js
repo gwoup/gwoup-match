@@ -7,15 +7,18 @@ import Match from "./containers/Match";
 import BeMatched from "./containers/BeMatched";
 import AppliedRoute from "./components/AppliedRoute";
 import Signup from "./containers/Signup";
+import AuthenticatedRoute from "./components/AuthenticatedRoute";
+import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
+
 
 
 export default ({ childProps }) =>
   <Switch>
-    <AppliedRoute path="/" exact component={Home} props={childProps} />
-    <AppliedRoute path="/match" exact component={Match} props={childProps} />
-    <AppliedRoute path="/bematched" exact component={BeMatched} props={childProps} />
-    <AppliedRoute path="/signup" exact component={Signup} props={childProps} />
-    <AppliedRoute path="/login" exact component={Login} props={childProps} />
+    <UnauthenticatedRoute path="/" exact component={Home} props={childProps} />
+    <AuthenticatedRoute path="/match" exact component={Match} props={childProps} />
+    <AuthenticatedRoute path="/bematched" exact component={BeMatched} props={childProps} />
+    <UnauthenticatedRoute path="/signup" exact component={Signup} props={childProps} />
+    <UnauthenticatedRoute path="/login" exact component={Login} props={childProps} />
     { /* Finally, catch all unmatched routes */ }
     <Route component={NotFound} />
   </Switch>;

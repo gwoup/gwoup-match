@@ -1,4 +1,21 @@
 .BeMatched {
-  padding-top: 100px;
+  padding-top: 10px;
   text-align: center;
+}
+
+.StudentGroups {
+  padding-top: 20px;
+  text-align: left;
+}
+
+.StudentButton {
+  text-align: left;
+  font-weight: bold;
+  margin: 7px;
+  top: 2px;
+  width: 300px;
+}
+
+.CheckGroup {
+  border:solid 200px;
 }

@@ -6,8 +6,6 @@ import "./App.css";
 import Routes from "./Routes";
 import { Auth } from "aws-amplify";
 
-
-
 class App extends Component {
   constructor(props) {
   super(props);
@@ -28,7 +26,6 @@ class App extends Component {
         alert(e);
       }
     }
-  
     this.setState({ isAuthenticating: false });
   }
 
@@ -71,11 +68,14 @@ class App extends Component {
                     <LinkContainer to="/bematched">
                       <NavItem>Be Matched</NavItem>
                     </LinkContainer>
-                    <NavItem onClick={this.handleLogout}>Logout</NavItem>
+                    <LinkContainer to="/profile">
+                      <NavItem>Profile</NavItem>
+                    </LinkContainer>
+                    <NavItem onClick={this.handleLogout}>Log out</NavItem>
                   </Fragment>
                 : <Fragment>
                     <LinkContainer to="/signup">
-                      <NavItem>Signup</NavItem>
+                      <NavItem>Sign up</NavItem>
                     </LinkContainer>
                     <LinkContainer to="/login">
                       <NavItem>Login</NavItem>

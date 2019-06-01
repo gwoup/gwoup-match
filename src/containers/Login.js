@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
+import { Link } from "react-router-dom";
 import "./Login.css";
 import { Auth } from "aws-amplify";
 
@@ -16,6 +17,7 @@ export default class Login extends Component {
     };
   }
 
+  //Here we could add some checks to handle multitenant setup based on url/DNS?
   validateForm() {
     return this.state.email.length > 0 && this.state.password.length > 0;
   }
@@ -62,6 +64,7 @@ export default class Login extends Component {
               onChange={this.handleChange}
               type="password"
             />
+          <Link to="/login/reset">Forgot password?</Link>
           </FormGroup>
             <LoaderButton
               block
@@ -76,14 +79,4 @@ export default class Login extends Component {
       </div>
     );
   }
-    // render () {
-    //     return (
-    //       <div className="Login">
-    //         <div className="lander">
-    //           <h1>GWOUPMATCH LOGIN</h1>
-    //           <p>Here you login</p>
-    //         </div>
-    //       </div>
-    //     );
-    // }
 }

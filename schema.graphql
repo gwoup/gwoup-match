@@ -1,0 +1,65 @@
+# TODO: add transformer for length directive
+#directive @length(min: Int, max: Int) on FIELD_DEFINITION
+
+
+enum QuizStatus {
+    DRAFT
+    PUBLISHED
+    VOTED
+    CLOSED
+}
+
+enum QuestionsType {
+    LINEAR
+    WEEKDAY
+    WEEKDAYTIME
+}
+
+type Quiz @model (
+    queries: {  },
+    mutations: { create: "createQuiz", }
+) @searchable
+{
+    id: ID!
+    title: String!
+    description: String
+    questions: [Question]!
+    minGroupSize: Int!
+    maxGroupSize: Int!
+    preferedGroupSize: Int!
+    status: QuizStatus!
+    editors: [String!]!
+    key: String!
+    responses: [QuizResponse]!
+    groups: [Group]! @connection(name: "QuizGroups", sortField: "name")
+}
+
+type Question {
+    id: ID!
+    type: QuestionsType
+    title: String!
+    description: String
+    questionsJsonStrincture: String!
+}
+
+type Group @model (
+    queries: null,
+    mutations: { create: "createGroup", update: "updateGroup", delete: "deleteGroup" }
+    subscriptions: null
+)
+{
+    id: ID!
+    name: String
+    members: [String]!
+    quiz: Quiz @connection(name: "QuizGroups")
+}
+
+type Response {
+    questionId: String!
+    response: String!
+}
+
+type QuizResponse {
+    respondent: String!
+    response:[Response!]!
+}

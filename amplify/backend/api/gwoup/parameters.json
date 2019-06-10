@@ -1,0 +1,10 @@
+{
+    "AppSyncApiName": "gwoup",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authgwoupb6f71dab",
+            "Outputs.UserPoolId"
+        ]
+    }
+}

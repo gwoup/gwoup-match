@@ -1,0 +1,66 @@
+# TODO: add transformer for length directive
+#directive @length(min: Int, max: Int) on FIELD_DEFINITION
+
+# FIXME: add @key to @model
+# @key ( fields: ["uKey", "status"] )
+
+type Quiz @model( subscriptions: null )
+@auth(rules: [
+  { allow: owner },
+  { allow: owner, ownerField: "editors", operations: [update, read] },
+  { allow: groups, groups: "everyone", queries:[get]}
+  { allow: groups, groups: ["Admin"] }
+])
+{
+  id: ID!
+  title: String!
+  description: String
+  questions: [Question]!
+  minGroupSize: Int!
+  maxGroupSize: Int!
+  preferedGroupSize: Int!
+  status: QuizStatus!
+  editors: [String]! @auth(rules: [{ allow: owner }])
+  uKey: String!
+  responses: [QuizResponse]! @auth(rules: [{ allow: owner }])
+  groups: [Group]! @connection(name: "QuizGroups", sortField: "name")
+}
+
+enum QuizStatus {
+  DRAFT
+  PUBLISHED
+  VOTED
+  CLOSED
+}
+
+enum QuestionsType {
+  LINEAR
+  WEEKDAY
+  WEEKDAYTIME
+}
+
+type Question {
+  id: ID!
+  type: QuestionsType
+  title: String!
+  description: String
+  questionsJsonStrincture: String!
+}
+
+type Group @model ( subscriptions: null )
+{
+  id: ID!
+  name: String
+  members: [String]!
+  quiz: Quiz @connection(name: "QuizGroups")
+}
+
+type Response {
+  questionId: String!
+  response: String!
+}
+
+type QuizResponse {
+  respondent: String!
+  response:[Response]!
+}

@@ -3,9 +3,9 @@ import "./Quizzes.css";
 import QuizRow from "../components/QuizRow/index"
 
 const quizzes = [
-  {id:1, title: 'Math classes grouping', key: 'QWE 1TY', status: 'DRAFT', questionsNum: 30, votesNum: 99, expectedNum: 120},
-  {id:2, title: 'Programming classes', key: 'BME 2TL', status: 'DRAFT', questionsNum: 30, votesNum: 99, expectedNum: 120},
-  {id:3, title: 'Test 1', key: 'DFV 89S', status: 'DRAFT', questionsNum: 30, votesNum: 99, expectedNum: 120}
+  {id:1, title: 'Math classes grouping', uKey: 'QWE 1TY', status: 'DRAFT', questionsNum: 30, votesNum: 99, expectedNum: 120},
+  {id:2, title: 'Programming classes', uKey: 'BME 2TL', status: 'DRAFT', questionsNum: 30, votesNum: 99, expectedNum: 120},
+  {id:3, title: 'Test 1', uKey: 'DFV 89S', status: 'DRAFT', questionsNum: 30, votesNum: 99, expectedNum: 120}
 ];
 
 export default class Quizzes extends Component {
@@ -23,7 +23,7 @@ export default class Quizzes extends Component {
             questionsNum={o.questionsNum}
             expectedNum={o.expectedNum}
             votesNum={o.votesNum}
-            quizKey={o.key}
+            uKey={o.uKey}
             key={o.id}/>
         )}
       </div>

@@ -1,8 +1,8 @@
 .quizBox {
     border: 1px solid lightgray;
     border-radius: 3px;
-    margin: 5px;
-    padding: 8px;
+    padding: 5px;
+    margin-top: 10px;
 }
 
 .quizBox:hover {

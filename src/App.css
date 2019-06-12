@@ -5,3 +5,7 @@
 .App .navbar-brand {
   font-weight: bold;
 }
+
+.infoBlock {
+  padding: 30px 0 0;
+}

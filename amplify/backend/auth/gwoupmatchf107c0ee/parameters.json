@@ -1,12 +1,12 @@
 {
-    "identityPoolName": "gwoupb6f71dab_identitypool_b6f71dab",
+    "identityPoolName": "gwoupmatchf107c0ee_identitypool_f107c0ee",
     "allowUnauthenticatedIdentities": false,
-    "lambdaLogPolicy": "gwoupb_b6f71dab_lambda_log_policy",
-    "openIdLambdaRoleName": "gwoupb_b6f71dab_openid_lambda_role",
-    "openIdRolePolicy": "gwoupb_b6f71dab_openid_pass_role_policy",
-    "openIdLambdaIAMPolicy": "gwoupb_b6f71dab_openid_lambda_iam_policy",
-    "openIdLogPolicy": "gwoupb_b6f71dab_openid_lambda_log_policy",
-    "userPoolName": "gwoupb6f71dab_userpool_b6f71dab",
+    "lambdaLogPolicy": "gwoupm_f107c0ee_lambda_log_policy",
+    "openIdLambdaRoleName": "gwoupm_f107c0ee_openid_lambda_role",
+    "openIdRolePolicy": "gwoupm_f107c0ee_openid_pass_role_policy",
+    "openIdLambdaIAMPolicy": "gwoupm_f107c0ee_openid_lambda_iam_policy",
+    "openIdLogPolicy": "gwoupm_f107c0ee_openid_lambda_log_policy",
+    "userPoolName": "gwoupmatchf107c0ee_userpool_f107c0ee",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -14,9 +14,9 @@
     "mfaTypes": [
         "SMS Text Message"
     ],
-    "roleName": "gwoupbb6f71dab_sns-role",
-    "roleExternalId": "gwoupbb6f71dab_role_external_id",
-    "policyName": "gwoupbb6f71dab-sns-policy",
+    "roleName": "gwoupmf107c0ee_sns-role",
+    "roleExternalId": "gwoupmf107c0ee_role_external_id",
+    "policyName": "gwoupmf107c0ee-sns-policy",
     "smsAuthenticationMessage": "Your authentication code is {####}",
     "smsVerificationMessage": "Your verification code is {####}",
     "emailVerificationSubject": "Your verification code",
@@ -27,7 +27,7 @@
     "requiredAttributes": [
         "email"
     ],
-    "userpoolClientName": "gwoupbb6f71dab_app_client",
+    "userpoolClientName": "gwoupmf107c0ee_app_client",
     "userpoolClientGenerateSecret": true,
     "userpoolClientRefreshTokenValidity": 30,
     "userpoolClientWriteAttributes": [
@@ -36,15 +36,15 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "mfaLambdaRole": "gwoupbb6f71dab_totp_lambda_role",
-    "mfaLambdaLogPolicy": "gwoupbb6f71dab_totp_lambda_log_policy",
-    "mfaPassRolePolicy": "gwoupbb6f71dab_totp_pass_role_policy",
-    "mfaLambdaIAMPolicy": "gwoupbb6f71dab_totp_lambda_iam_policy",
-    "userpoolClientLambdaRole": "gwoupbb6f71dab_userpoolclient_lambda_role",
-    "userpoolClientLogPolicy": "gwoupbb6f71dab_userpoolclient_lambda_log_policy",
-    "userpoolClientLambdaPolicy": "gwoupbb6f71dab_userpoolclient_lambda_iam_policy",
+    "mfaLambdaRole": "gwoupmf107c0ee_totp_lambda_role",
+    "mfaLambdaLogPolicy": "gwoupmf107c0ee_totp_lambda_log_policy",
+    "mfaPassRolePolicy": "gwoupmf107c0ee_totp_pass_role_policy",
+    "mfaLambdaIAMPolicy": "gwoupmf107c0ee_totp_lambda_iam_policy",
+    "userpoolClientLambdaRole": "gwoupmf107c0ee_userpoolclient_lambda_role",
+    "userpoolClientLogPolicy": "gwoupmf107c0ee_userpoolclient_lambda_log_policy",
+    "userpoolClientLambdaPolicy": "gwoupmf107c0ee_userpoolclient_lambda_iam_policy",
     "userpoolClientSetAttributes": false,
-    "resourceName": "gwoupb6f71dab",
+    "resourceName": "gwoupmatchf107c0ee",
     "authSelections": "identityPoolAndUserPool",
     "authRoleName": {
         "Ref": "AuthRoleName"

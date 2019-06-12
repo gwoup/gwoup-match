@@ -4,7 +4,16 @@ import {Nav, Navbar, NavItem} from "react-bootstrap";
 import {LinkContainer} from "react-router-bootstrap";
 import "./App.css";
 import Routes from "./Routes";
-import {Auth} from "aws-amplify";
+import Amplify, {Auth} from "aws-amplify";
+import awsconfig from "./aws-exports";
+
+Amplify.configure(awsconfig);
+
+const GRAPHQL_API_REGION = awsconfig.aws_appsync_region;
+const GRAPHQL_API_ENDPOINT_URL = awsconfig.aws_appsync_graphqlEndpoint;
+const S3_BUCKET_REGION = awsconfig.aws_user_files_s3_bucket_region;
+const S3_BUCKET_NAME = awsconfig.aws_user_files_s3_bucket;
+const AUTH_TYPE = awsconfig.aws_appsync_authenticationType;
 
 
 class App extends Component {
@@ -60,8 +69,8 @@ class App extends Component {
             <Nav pullRight>
               {this.state.isAuthenticated
                 ? <Fragment>
-                  <LinkContainer to="/match">
-                    <NavItem>Match</NavItem>
+                  <LinkContainer to="/quizzes">
+                    <NavItem>Quizzes</NavItem>
                   </LinkContainer>
                   <LinkContainer to="/bematched">
                     <NavItem>Be Matched</NavItem>

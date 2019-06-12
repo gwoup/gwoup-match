@@ -209,7 +209,7 @@ Resources:
   # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
-      ClientName: gwoupbb6f71dab_app_clientWeb
+      ClientName: gwoupmf107c0ee_app_clientWeb
       
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
@@ -341,7 +341,7 @@ Resources:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties: 
-      IdentityPoolName: !If [ShouldNotCreateEnvResources, 'gwoupb6f71dab_identitypool_b6f71dab', !Join ['',['gwoupb6f71dab_identitypool_b6f71dab', '__', !Ref env]]]
+      IdentityPoolName: !If [ShouldNotCreateEnvResources, 'gwoupmatchf107c0ee_identitypool_f107c0ee', !Join ['',['gwoupmatchf107c0ee_identitypool_f107c0ee', '__', !Ref env]]]
       
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient

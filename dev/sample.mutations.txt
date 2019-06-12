@@ -1,0 +1,15 @@
+mutation {
+  createQuiz(input: {
+    title: "1st",
+    questions: [],
+    minGroupSize: 2,
+    maxGroupSize: 500,
+    preferedGroupSize: 20,
+    status: DRAFT,
+    responses: [],
+    editors: ["alex.com.ua@gmail.com"],
+    uKey: "3QAED5"
+  }) {
+    id, title
+  }
+}

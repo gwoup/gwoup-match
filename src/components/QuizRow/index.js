@@ -3,7 +3,7 @@ import "./style.css";
 
 export default class Index extends Component {
   render() {
-    const {title, status, questionsNum, expectedNum, votesNum, uKey} = this.props;
+    const {id, title, status, questionsNum, expectedNum, votesNum, uKey, deleteHandler} = this.props;
     return (
       <div className="row quizBox">
         <div className="col col-lg-6">
@@ -21,7 +21,7 @@ export default class Index extends Component {
         <div className="col col-lg-2">
           <div className="btn-toolbar">
             <button className="btn btn-default btn-sm">Edit</button>
-            <button className="btn btn-default btn-sm">Delete</button>
+            <button onClick={() => deleteHandler(id)} className="btn btn-default btn-sm">Delete</button>
           </div>
         </div>
       </div>

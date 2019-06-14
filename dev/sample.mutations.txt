@@ -4,7 +4,7 @@ mutation {
     questions: [],
     minGroupSize: 2,
     maxGroupSize: 500,
-    preferedGroupSize: 20,
+    preferredGroupSize: 20,
     status: DRAFT,
     responses: [],
     editors: ["alex.com.ua@gmail.com"],

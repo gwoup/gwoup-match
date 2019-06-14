@@ -18,7 +18,7 @@ type Quiz @model( subscriptions: null )
   questions: [Question]!
   minGroupSize: Int!
   maxGroupSize: Int!
-  preferedGroupSize: Int!
+  preferredGroupSize: Int!
   status: QuizStatus!
   editors: [String]! @auth(rules: [{ allow: owner }])
   uKey: String!

@@ -5,6 +5,7 @@ import NotFound from "./containers/NotFound";
 import Login from "./containers/Login";
 import Match from "./containers/Match";
 import Quizzes from "./containers/Quizzes";
+import QuizForm from "./containers/QuizForm";
 import BeMatched from "./containers/BeMatched";
 import AppliedRoute from "./components/AppliedRoute";
 import Signup from "./containers/Signup";
@@ -16,6 +17,8 @@ import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
 export default ({ childProps }) =>
   <Switch>
     <UnauthenticatedRoute path="/" exact component={Home} props={childProps} />
+    <AuthenticatedRoute path="/quizzes/new" exact component={QuizForm} props={childProps} />
+    <AuthenticatedRoute path="/quizzes/:id" component={QuizForm} props={childProps} />
     <AuthenticatedRoute path="/quizzes" exact component={Quizzes} props={childProps} />
     <AuthenticatedRoute path="/bematched" exact component={BeMatched} props={childProps} />
     <UnauthenticatedRoute path="/signup" exact component={Signup} props={childProps} />

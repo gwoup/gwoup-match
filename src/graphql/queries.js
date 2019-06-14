@@ -15,7 +15,7 @@ export const getQuiz = `query GetQuiz($id: ID!) {
     }
     minGroupSize
     maxGroupSize
-    preferedGroupSize
+    preferredGroupSize
     status
     editors
     uKey
@@ -56,7 +56,7 @@ export const listQuizs = `query ListQuizs(
       }
       minGroupSize
       maxGroupSize
-      preferedGroupSize
+      preferredGroupSize
       status
       editors
       uKey
@@ -89,7 +89,7 @@ export const getGroup = `query GetGroup($id: ID!) {
       }
       minGroupSize
       maxGroupSize
-      preferedGroupSize
+      preferredGroupSize
       status
       editors
       uKey
@@ -119,7 +119,7 @@ export const listGroups = `query ListGroups(
         description
         minGroupSize
         maxGroupSize
-        preferedGroupSize
+        preferredGroupSize
         status
         editors
         uKey

@@ -15,7 +15,7 @@ export const createQuiz = `mutation CreateQuiz($input: CreateQuizInput!) {
     }
     minGroupSize
     maxGroupSize
-    preferedGroupSize
+    preferredGroupSize
     status
     editors
     uKey
@@ -51,7 +51,7 @@ export const updateQuiz = `mutation UpdateQuiz($input: UpdateQuizInput!) {
     }
     minGroupSize
     maxGroupSize
-    preferedGroupSize
+    preferredGroupSize
     status
     editors
     uKey
@@ -87,7 +87,7 @@ export const deleteQuiz = `mutation DeleteQuiz($input: DeleteQuizInput!) {
     }
     minGroupSize
     maxGroupSize
-    preferedGroupSize
+    preferredGroupSize
     status
     editors
     uKey
@@ -127,7 +127,7 @@ export const createGroup = `mutation CreateGroup($input: CreateGroupInput!) {
       }
       minGroupSize
       maxGroupSize
-      preferedGroupSize
+      preferredGroupSize
       status
       editors
       uKey
@@ -159,7 +159,7 @@ export const updateGroup = `mutation UpdateGroup($input: UpdateGroupInput!) {
       }
       minGroupSize
       maxGroupSize
-      preferedGroupSize
+      preferredGroupSize
       status
       editors
       uKey
@@ -191,7 +191,7 @@ export const deleteGroup = `mutation DeleteGroup($input: DeleteGroupInput!) {
       }
       minGroupSize
       maxGroupSize
-      preferedGroupSize
+      preferredGroupSize
       status
       editors
       uKey

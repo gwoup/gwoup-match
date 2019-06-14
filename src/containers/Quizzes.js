@@ -41,10 +41,17 @@ export default class Quizzes extends Component {
     this.setState({quizzes: result.data.listQuizs.items})
   }
 
+  handleCreateNewQuiz = () => {
+    this.props.history.push('/quizzes/new');
+  };
+
+  handleUpdateQuiz = quizId => {
+    this.props.history.push(`/quizzes/${quizId}`);
+  };
+
   handleDeleteQuiz = async quizId => {
     const {quizzes} = this.state;
     const result = await API.graphql(graphqlOperation(deleteQuiz, {input: {id: quizId}}));
-    console.log(result.data.deleteQuiz.id);
 
     const updatedQuizzes = quizzes.filter(quiz => quiz.id !== result.data.deleteQuiz.id);
     this.setState({quizzes: updatedQuizzes})
@@ -55,7 +62,7 @@ export default class Quizzes extends Component {
     return (
       <div className="container">
         <div className="row text-left">
-          <button className="btn btn-success">Add new Quiz</button>
+          <button className="btn btn-success" onClick={(e) => this.handleCreateNewQuiz(e)}>Add new Quiz</button>
         </div>
 
         {quizzes.map(obj =>
@@ -68,6 +75,7 @@ export default class Quizzes extends Component {
             uKey={obj.uKey}
             id={obj.id}
             key={obj.id}
+            updateHandler={this.handleUpdateQuiz}
             deleteHandler={this.handleDeleteQuiz}
           />
         )}

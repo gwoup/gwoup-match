@@ -1,70 +1,39 @@
 import React, {Component} from "react";
 import "./Quizzes.css";
-import {API, graphqlOperation} from "aws-amplify";
-import {listQuizs} from "../graphql/queries";
+import {graphqlOperation} from "aws-amplify";
+import {Connect} from "aws-amplify-react";
+import {Link} from "react-router-dom";
+import {listQuizzes} from "../graphql/queries";
 import {deleteQuiz} from "../graphql/mutations";
+import {onCreateOrDeleteQuiz} from "../graphql/customSubscriptions";
 import QuizRow from "../components/QuizRow/index";
 
-/*
-Sample quiz data structure:
-
-const quizzes = [
-  {
-    id: 1,
-    title: 'Math classes grouping',
-    uKey: 'QWE 1TY',
-    status: 'DRAFT',
-    questionsNum: 30,
-    votesNum: 99,
-    expectedNum: 120
-  },
-  {
-    id: 2,
-    title: 'Programming classes',
-    uKey: 'BME 2TL',
-    status: 'DRAFT',
-    questionsNum: 30,
-    votesNum: 99,
-    expectedNum: 120
-  }
-];
-*/
 
 export default class Quizzes extends Component {
+  quizDeleteMutation = null;
 
-  state = {
-    quizzes: []
+  handleDeleteQuiz = quizId => {
+    this.quizDeleteMutation({input: {id: quizId}});
   };
 
-  async componentDidMount() {
-    const result = await API.graphql(graphqlOperation(listQuizs));
-    this.setState({quizzes: result.data.listQuizs.items})
-  }
+  handleSubscriptions = (prev, newData) => {
+    if (newData.onCreateQuiz) {
+      const quizzes = [...prev.listQuizzes.items];
+      prev.listQuizzes.items = [newData.onCreateQuiz, ...quizzes];
+    }
 
-  handleCreateNewQuiz = () => {
-    this.props.history.push('/quizzes/new');
+    if (newData.onDeleteQuiz) {
+      console.log(`quiz "${newData.onDeleteQuiz.title}" deleted`);
+      prev.listQuizzes.items = prev.listQuizzes.items.filter(item => item.id !== newData.onDeleteQuiz.id);
+    }
+
+    return prev;
   };
 
-  handleUpdateQuiz = quizId => {
-    this.props.history.push(`/quizzes/${quizId}`);
-  };
-
-  handleDeleteQuiz = async quizId => {
-    const {quizzes} = this.state;
-    const result = await API.graphql(graphqlOperation(deleteQuiz, {input: {id: quizId}}));
-
-    const updatedQuizzes = quizzes.filter(quiz => quiz.id !== result.data.deleteQuiz.id);
-    this.setState({quizzes: updatedQuizzes})
-  };
 
   render() {
-    const {quizzes} = this.state;
-    return (
-      <div className="container">
-        <div className="row text-left">
-          <button className="btn btn-success" onClick={(e) => this.handleCreateNewQuiz(e)}>Add new Quiz</button>
-        </div>
-
+    const ListView = ({quizzes}) => (
+      <div>
         {quizzes.map(obj =>
           <QuizRow
             title={obj.title}
@@ -75,10 +44,37 @@ export default class Quizzes extends Component {
             uKey={obj.uKey}
             id={obj.id}
             key={obj.id}
-            updateHandler={this.handleUpdateQuiz}
             deleteHandler={this.handleDeleteQuiz}
           />
         )}
+      </div>
+    );
+
+    return (
+      <div className="container">
+        <div className="row text-left">
+          <Link to="/quizzes/new">
+            <button className="btn btn-success">Add new Quiz</button>
+          </Link>
+        </div>
+        <Connect query={graphqlOperation(listQuizzes)}
+                 mutation={graphqlOperation(deleteQuiz)}
+                 subscription={graphqlOperation(onCreateOrDeleteQuiz)}
+                 onSubscriptionMsg={this.handleSubscriptions}>
+          {({data, loading, error, mutation}) => {
+            this.quizDeleteMutation = mutation;
+
+            if (typeof data == "undefined" || typeof data.listQuizzes == "undefined") {
+              data = {listQuizzes: []};
+            }
+
+            const {listQuizzes} = data;
+
+            if (error) return <h3>Error</h3>;
+            if (loading || !listQuizzes) return <h3>Loading...</h3>;
+            return (<ListView quizzes={listQuizzes.items && listQuizzes.items.length ? listQuizzes.items : []}/>);
+          }}
+        </Connect>
       </div>
     );
   }

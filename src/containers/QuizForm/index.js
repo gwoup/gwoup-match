@@ -10,8 +10,8 @@ import {
 } from "react-bootstrap";
 import LoaderButton from "../../components/LoaderButton";
 import {API, graphqlOperation} from "aws-amplify";
-import {getQuiz} from "../../graphql/queries";
-import {createQuiz, deleteQuiz, updateQuiz} from "../../graphql/mutations";
+import {fetchQuiz} from "../../graphql/queries";
+import {createQuiz, updateQuiz} from "../../graphql/mutations";
 
 import "./styles.css";
 
@@ -21,6 +21,7 @@ export default class QuizForm extends Component {
 
     this.state = {
       isLoading: false,
+      isSaving: false,
       id: null,
       title: "",
       status: "DRAFT",
@@ -33,13 +34,14 @@ export default class QuizForm extends Component {
   async componentDidMount() {
     const {match: {params}} = this.props;
 
-    if (params.id) {
-      const id = params.id;
-      const result = await API.graphql(graphqlOperation(getQuiz, {id}));
+    if (params && params.id) {
+      this.setState({isLoading: true});
 
-      if (result.data.getQuiz) {
-        console.log('componentDidMount');
-        const {title, minGroupSize, maxGroupSize, preferredGroupSize} = result.data.getQuiz;
+      const id = params.id;
+      const result = await API.graphql(graphqlOperation(fetchQuiz, {id}));
+
+      if (result.data.fetchQuiz) {
+        const {title, minGroupSize, maxGroupSize, preferredGroupSize} = result.data.fetchQuiz;
         this.setState({
           id,
           title,
@@ -48,6 +50,8 @@ export default class QuizForm extends Component {
           preferredGroupSize
         });
       }
+
+      this.setState({isLoading: false});
     }
   }
 
@@ -71,7 +75,7 @@ export default class QuizForm extends Component {
   };
 
   saveQuiz = async () => {
-    this.setState({isLoading: true});
+    this.setState({isSaving: true});
     const {id, title, minGroupSize, maxGroupSize, preferredGroupSize, status} = this.state;
 
     try {
@@ -88,13 +92,14 @@ export default class QuizForm extends Component {
         editors: ["alex.com.ua@gmail.com"],
         uKey: "3QAED5"
       };
+
       await API.graphql(graphqlOperation(graphQLop, {input}));
       this.props.history.push('/quizzes');
     } catch (e) {
       console.log(e);
     }
 
-    this.setState({isLoading: false});
+    this.setState({isSaving: false});
   };
 
   handleChange = event => {
@@ -104,7 +109,10 @@ export default class QuizForm extends Component {
   };
 
   renderForm() {
-    const {minGroupSize, maxGroupSize, preferredGroupSize} = this.state;
+    const {isLoading, isSaving, minGroupSize, maxGroupSize, preferredGroupSize} = this.state;
+
+    if (isLoading) return <h3>Loading...</h3>;
+
     return (
       <div>
         <p>
@@ -210,7 +218,7 @@ export default class QuizForm extends Component {
                   bsSize="large"
                   disabled={!this.validateForm()}
                   type="button"
-                  isLoading={this.state.isLoading}
+                  isLoading={isSaving}
                   text="Publish"
                   loadingText="Publishing…"
                   onClick={() => this.handlePublish()}
@@ -223,7 +231,7 @@ export default class QuizForm extends Component {
                   bsSize="large"
                   disabled={!this.validateForm()}
                   type="submit"
-                  isLoading={this.state.isLoading}
+                  isLoading={isSaving}
                   text="Save"
                   loadingText="Saving…"
                 />

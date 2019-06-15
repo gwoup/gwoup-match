@@ -1,9 +1,10 @@
 import React, {Component} from "react";
 import "./style.css";
+import {Link} from "react-router-dom";
 
 export default class Index extends Component {
   render() {
-    const {id, title, status, questionsNum, expectedNum, votesNum, uKey, deleteHandler, updateHandler} = this.props;
+    const {id, title, status, questionsNum, expectedNum, votesNum, uKey, deleteHandler} = this.props;
     return (
       <div className="row quizBox">
         <div className="col col-lg-6">
@@ -20,7 +21,9 @@ export default class Index extends Component {
         </div>
         <div className="col col-lg-2">
           <div className="btn-toolbar">
-            <button onClick={() => updateHandler(id)} className="btn btn-default btn-sm">Edit</button>
+            <Link to={`/quizzes/${id}`}>
+              <button className="btn btn-default btn-sm">Edit</button>
+            </Link>
             <button onClick={() => deleteHandler(id)} className="btn btn-default btn-sm">Delete</button>
           </div>
         </div>

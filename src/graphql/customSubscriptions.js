@@ -1,7 +1,4 @@
-// eslint-disable
-// this is an auto generated file. This will be overwritten
-
-export const onCreateQuiz = `subscription OnCreateQuiz {
+export const onCreateOrDeleteQuiz = `subscription OnCreateOrDeleteQuiz {
   onCreateQuiz {
     id
     title
@@ -34,46 +31,7 @@ export const onCreateQuiz = `subscription OnCreateQuiz {
       }
       nextToken
     }
-  }
-}
-`;
-export const onUpdateQuiz = `subscription OnUpdateQuiz {
-  onUpdateQuiz {
-    id
-    title
-    description
-    questions {
-      id
-      type
-      title
-      description
-      questionsJsonStrincture
-    }
-    minGroupSize
-    maxGroupSize
-    preferredGroupSize
-    status
-    editors
-    uKey
-    responses {
-      respondent
-      response {
-        questionId
-        response
-      }
-    }
-    groups {
-      items {
-        id
-        name
-        members
-      }
-      nextToken
-    }
-  }
-}
-`;
-export const onDeleteQuiz = `subscription OnDeleteQuiz {
+  },
   onDeleteQuiz {
     id
     title

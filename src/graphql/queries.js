@@ -1,8 +1,8 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
 
-export const getQuiz = `query GetQuiz($id: ID!) {
-  getQuiz(id: $id) {
+export const fetchQuiz = `query FetchQuiz($id: ID!) {
+  fetchQuiz(id: $id) {
     id
     title
     description
@@ -37,12 +37,12 @@ export const getQuiz = `query GetQuiz($id: ID!) {
   }
 }
 `;
-export const listQuizs = `query ListQuizs(
+export const listQuizzes = `query ListQuizzes(
   $filter: ModelQuizFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listQuizs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listQuizzes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       title

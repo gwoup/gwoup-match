@@ -4,7 +4,7 @@
 # FIXME: add @key to @model
 # @key ( fields: ["uKey", "status"] )
 
-type Quiz @model( subscriptions: null )
+type Quiz @model( queries: { get: "fetchQuiz", list: "listQuizzes", } )
 @auth(rules: [
   { allow: owner },
   { allow: owner, ownerField: "editors", operations: [update, read] },

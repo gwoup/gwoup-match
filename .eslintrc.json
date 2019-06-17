@@ -15,7 +15,7 @@
     "ENV": false
   },
   "rules": {
-    "indent": [2, 2],
+    "indent": [2, 2, { "SwitchCase": 1 }],
     "react/jsx-filename-extension": [
       1,
       {

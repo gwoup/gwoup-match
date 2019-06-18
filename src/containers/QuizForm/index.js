@@ -9,15 +9,12 @@ import {
   FormControl,
   ControlLabel
 } from "react-bootstrap";
-import {API, graphqlOperation} from "aws-amplify";
 
 import {connect} from "react-redux";
 
 import LoaderButton from "../../components/LoaderButton";
 import QuestionContainer from "../../components/Questions/QuestionContainer";
-import {fetchQuiz} from "../../graphql/queries";
-import {createQuiz, updateQuiz} from "../../graphql/mutations";
-import {saveSurvey} from "../../actions/surveys";
+import {saveSurvey, getSurveyById} from "../../actions/surveys";
 import {serializeQuestionsArr, deserializeQuestionsArr} from "../../utils/survey";
 
 
@@ -38,7 +35,7 @@ class QuizForm extends Component {
     super(props);
 
     // FIXME: remove uKey from mutation
-    const {id, title, status, minGroupSize, maxGroupSize, preferredGroupSize, questions, uKey} = this.props.survey;
+    const {id, title, status, minGroupSize, maxGroupSize, preferredGroupSize, uKey} = this.props.survey;
 
     this.state = {
       id,
@@ -47,9 +44,35 @@ class QuizForm extends Component {
       minGroupSize,
       maxGroupSize,
       preferredGroupSize,
-      questions: deserializeQuestionsArr(questions),
+      questions: [],
       uKey
     };
+  }
+
+  async componentDidMount() {
+    const {match: {params}} = this.props;
+
+    if (params && params.id) {
+      this.setState({isLoading: true});
+
+      try {
+        const survey = await this.props.getSurveyById(params.id);
+        console.log('getSurveyById', survey);
+        const {title, minGroupSize, maxGroupSize, preferredGroupSize, questions} = survey;
+        this.setState({
+          id: params.id,
+          title,
+          minGroupSize,
+          maxGroupSize,
+          preferredGroupSize,
+          questions: deserializeQuestionsArr(questions)
+        });
+      } catch (exception) {
+        console.log(exception);
+      }
+
+      this.setState({isLoading: false});
+    }
   }
 
   validateForm() {
@@ -75,42 +98,30 @@ class QuizForm extends Component {
     await this.saveQuiz();
   };
 
-  componentWillReceiveProps(nextProps) {
-    console.log('nextProps', nextProps);
-  }
-
   saveQuiz = async () => {
     this.setState({isSaving: true});
     const {id, title, minGroupSize, maxGroupSize, preferredGroupSize, status, uKey, questions} = this.state;
+
     const isCreateOperation = this.isCreateOp(id);
 
-    try {
-      // TODO: fix me - move to actions
-      const graphQlOp = isCreateOperation ? createQuiz : updateQuiz;
-      const input = {
-        title,
-        minGroupSize,
-        maxGroupSize,
-        preferredGroupSize,
-        questions: serializeQuestionsArr(questions),
-        status,
-        responses: [],
-        editors: ["alex.com.ua@gmail.com"],
-        uKey: isCreateOperation ? this.getRandomKey(6) : uKey
-      };
+    const survey = {
+      title,
+      minGroupSize,
+      maxGroupSize,
+      preferredGroupSize,
+      questions: serializeQuestionsArr(questions),
+      status,
+      responses: [],
+      editors: ["alex.com.ua@gmail.com"],
+      uKey: isCreateOperation ? this.getRandomKey(6) : uKey
+    };
 
-      if (!isCreateOperation) {
-        input.id = id;
-      }
-
-      console.log('input', input);
-
-      await API.graphql(graphqlOperation(graphQlOp, {input}));
-
-      this.props.history.push('/quizzes');
-    } catch (e) {
-      console.log(e);
+    if (!isCreateOperation) {
+      survey.id = id;
     }
+
+    this.props.saveSurvey(survey);
+    this.props.history.push('/quizzes');
 
     this.setState({isSaving: false});
   };
@@ -336,7 +347,12 @@ const mapStateToProps = (state, ownProps) => {
   return {survey};
 };
 
-// export default QuizForm;
+const mapDispatchToProps = dispatch => ({
+  saveSurvey: (survey) => dispatch(saveSurvey(survey)),
+  getSurveyById: (surveyId) => dispatch(getSurveyById(surveyId)),
+});
+
 export default connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(QuizForm);

@@ -3,14 +3,22 @@ import "./Quizzes.css";
 import {graphqlOperation} from "aws-amplify";
 import {Connect} from "aws-amplify-react";
 import {Link} from "react-router-dom";
+import {connect} from "react-redux";
 import {listQuizzes} from "../graphql/queries";
 import {deleteQuiz} from "../graphql/mutations";
 import {onCreateOrDeleteQuiz} from "../graphql/customSubscriptions";
 import QuizRow from "../components/QuizRow/index";
+import {initSurveys} from "../actions/surveys";
 
 
-export default class Quizzes extends Component {
+class Quizzes extends Component {
   quizDeleteMutation = null;
+
+  constructor(props) {
+    super(props);
+
+    this.subscription = undefined;
+  }
 
   handleDeleteQuiz = quizId => {
     this.quizDeleteMutation({input: {id: quizId}});
@@ -30,6 +38,10 @@ export default class Quizzes extends Component {
     return prev;
   };
 
+  // FIXME
+  // componentWillUnmount() {
+  //   this.subscription.unsubscribe();
+  // }
 
   render() {
     const ListView = ({quizzes}) => (
@@ -57,10 +69,11 @@ export default class Quizzes extends Component {
             <button className="btn btn-success">Add new Quiz</button>
           </Link>
         </div>
-        <Connect query={graphqlOperation(listQuizzes)}
-                 mutation={graphqlOperation(deleteQuiz)}
-                 subscription={graphqlOperation(onCreateOrDeleteQuiz)}
-                 onSubscriptionMsg={this.handleSubscriptions}>
+        <Connect
+          query={graphqlOperation(listQuizzes)}
+          mutation={graphqlOperation(deleteQuiz)}
+          subscription={graphqlOperation(onCreateOrDeleteQuiz)}
+          onSubscriptionMsg={this.handleSubscriptions}>
           {({data, loading, error, mutation}) => {
             this.quizDeleteMutation = mutation;
 
@@ -69,6 +82,8 @@ export default class Quizzes extends Component {
             }
 
             const {listQuizzes} = data;
+            const surveys = listQuizzes.items && listQuizzes.items.length ? listQuizzes.items : [];
+            this.props.initSurveys(surveys);
 
             if (error) return <h3>Error</h3>;
             if (loading || !listQuizzes) return <h3>Loading...</h3>;
@@ -79,3 +94,12 @@ export default class Quizzes extends Component {
     );
   }
 }
+
+const mapDispatchToProps = dispatch => ({
+  initSurveys: (surveys) => dispatch(initSurveys(surveys)),
+});
+
+export default connect(
+  null,
+  mapDispatchToProps,
+)(Quizzes);

@@ -1,8 +1,8 @@
 import React, {Component} from "react";
-import "./style.css";
 import {Link} from "react-router-dom";
+import "./style.css";
 
-export default class Index extends Component {
+export default class QuizRow extends Component {
   render() {
     const {id, title, status, questionsNum, expectedNum, votesNum, uKey, deleteHandler} = this.props;
     return (

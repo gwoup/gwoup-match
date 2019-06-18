@@ -7,11 +7,10 @@ export const createQuiz = `mutation CreateQuiz($input: CreateQuizInput!) {
     title
     description
     questions {
-      id
       type
       title
       description
-      questionsJsonStrincture
+      jsonStructure
     }
     minGroupSize
     maxGroupSize
@@ -43,11 +42,10 @@ export const updateQuiz = `mutation UpdateQuiz($input: UpdateQuizInput!) {
     title
     description
     questions {
-      id
       type
       title
       description
-      questionsJsonStrincture
+      jsonStructure
     }
     minGroupSize
     maxGroupSize
@@ -79,11 +77,10 @@ export const deleteQuiz = `mutation DeleteQuiz($input: DeleteQuizInput!) {
     title
     description
     questions {
-      id
       type
       title
       description
-      questionsJsonStrincture
+      jsonStructure
     }
     minGroupSize
     maxGroupSize
@@ -119,11 +116,10 @@ export const createGroup = `mutation CreateGroup($input: CreateGroupInput!) {
       title
       description
       questions {
-        id
         type
         title
         description
-        questionsJsonStrincture
+        jsonStructure
       }
       minGroupSize
       maxGroupSize
@@ -151,11 +147,10 @@ export const updateGroup = `mutation UpdateGroup($input: UpdateGroupInput!) {
       title
       description
       questions {
-        id
         type
         title
         description
-        questionsJsonStrincture
+        jsonStructure
       }
       minGroupSize
       maxGroupSize
@@ -183,11 +178,10 @@ export const deleteGroup = `mutation DeleteGroup($input: DeleteGroupInput!) {
       title
       description
       questions {
-        id
         type
         title
         description
-        questionsJsonStrincture
+        jsonStructure
       }
       minGroupSize
       maxGroupSize

@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import PropTypes from "prop-types";
 import {
   HelpBlock,
   FormGroup,
@@ -8,58 +9,57 @@ import {
   FormControl,
   ControlLabel
 } from "react-bootstrap";
-import LoaderButton from "../../components/LoaderButton";
 import {API, graphqlOperation} from "aws-amplify";
+
+import {connect} from "react-redux";
+
+import LoaderButton from "../../components/LoaderButton";
+import QuestionContainer from "../../components/Questions/QuestionContainer";
 import {fetchQuiz} from "../../graphql/queries";
 import {createQuiz, updateQuiz} from "../../graphql/mutations";
+import {saveSurvey} from "../../actions/surveys";
+import {serializeQuestionsArr, deserializeQuestionsArr} from "../../utils/survey";
+
 
 import "./styles.css";
 
-export default class QuizForm extends Component {
+const SURVEY_INITIAL_STATE = {
+  id: null,
+  title: "",
+  status: "DRAFT",
+  minGroupSize: 1,
+  maxGroupSize: 10,
+  preferredGroupSize: 7,
+  questions: []
+};
+
+class QuizForm extends Component {
   constructor(props) {
     super(props);
 
+    // FIXME: remove uKey from mutation
+    const {id, title, status, minGroupSize, maxGroupSize, preferredGroupSize, questions, uKey} = this.props.survey;
+
     this.state = {
-      isLoading: false,
-      isSaving: false,
-      id: null,
-      title: "",
-      status: "DRAFT",
-      minGroupSize: 1,
-      maxGroupSize: 10,
-      preferredGroupSize: 7
+      id,
+      title,
+      status,
+      minGroupSize,
+      maxGroupSize,
+      preferredGroupSize,
+      questions: deserializeQuestionsArr(questions),
+      uKey
     };
   }
 
-  async componentDidMount() {
-    const {match: {params}} = this.props;
-
-    if (params && params.id) {
-      this.setState({isLoading: true});
-
-      const id = params.id;
-      const result = await API.graphql(graphqlOperation(fetchQuiz, {id}));
-
-      if (result.data.fetchQuiz) {
-        const {title, minGroupSize, maxGroupSize, preferredGroupSize} = result.data.fetchQuiz;
-        this.setState({
-          id,
-          title,
-          minGroupSize,
-          maxGroupSize,
-          preferredGroupSize
-        });
-      }
-
-      this.setState({isLoading: false});
-    }
-  }
-
   validateForm() {
-    const {title, minGroupSize, maxGroupSize, preferredGroupSize} = this.state;
+    const {title, minGroupSize, maxGroupSize, preferredGroupSize, questions} = this.state;
+
     return (
       title.length > 0 && minGroupSize > 0 &&
-      maxGroupSize > 0 && maxGroupSize >= minGroupSize && preferredGroupSize > 0 && preferredGroupSize >= minGroupSize
+      maxGroupSize > 0 && maxGroupSize >= minGroupSize &&
+      preferredGroupSize > 0 && preferredGroupSize >= minGroupSize &&
+      questions.length > 0
     );
   }
 
@@ -71,29 +71,42 @@ export default class QuizForm extends Component {
 
   handleSubmit = async event => {
     event.preventDefault();
+
     await this.saveQuiz();
   };
 
+  componentWillReceiveProps(nextProps) {
+    console.log('nextProps', nextProps);
+  }
+
   saveQuiz = async () => {
     this.setState({isSaving: true});
-    const {id, title, minGroupSize, maxGroupSize, preferredGroupSize, status} = this.state;
+    const {id, title, minGroupSize, maxGroupSize, preferredGroupSize, status, uKey, questions} = this.state;
+    const isCreateOperation = this.isCreateOp(id);
 
     try {
-      const graphQLop = (id === null) ? createQuiz : updateQuiz;
+      // TODO: fix me - move to actions
+      const graphQlOp = isCreateOperation ? createQuiz : updateQuiz;
       const input = {
-        id,
         title,
-        questions: [],
         minGroupSize,
         maxGroupSize,
         preferredGroupSize,
+        questions: serializeQuestionsArr(questions),
         status,
         responses: [],
         editors: ["alex.com.ua@gmail.com"],
-        uKey: "3QAED5"
+        uKey: isCreateOperation ? this.getRandomKey(6) : uKey
       };
 
-      await API.graphql(graphqlOperation(graphQLop, {input}));
+      if (!isCreateOperation) {
+        input.id = id;
+      }
+
+      console.log('input', input);
+
+      await API.graphql(graphqlOperation(graphQlOp, {input}));
+
       this.props.history.push('/quizzes');
     } catch (e) {
       console.log(e);
@@ -102,152 +115,228 @@ export default class QuizForm extends Component {
     this.setState({isSaving: false});
   };
 
+  isCreateOp = (id) => {
+    return id === null
+  };
+
+  getRandomKey = (length) => {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  };
+
   handleChange = event => {
     this.setState({
       [event.target.id]: event.target.value
     });
   };
 
-  renderForm() {
-    const {isLoading, isSaving, minGroupSize, maxGroupSize, preferredGroupSize} = this.state;
+  handleAddNewQuestion = event => {
+    event.preventDefault();
+    const {questions} = this.state;
 
+    this.setState({questions: [...questions, QuestionContainer.getNewQuestion()]}, () => {
+      console.log(this.state.questions);
+    });
+  };
+
+  handleUpdateQuestion = (updatedQuestion) => {
+    let updatedQuestionIndex = -1;
+    const {questions} = this.state;
+    console.log("questions has to be updated");
+
+    for (let i = 0; i < questions.length; i++) {
+      if (questions[i].id === updatedQuestion.id) {
+        updatedQuestionIndex = i;
+        break;
+      }
+    }
+
+    if (updatedQuestionIndex > -1) {
+      let updatedQuestions = [
+        ...questions.slice(0, updatedQuestionIndex),
+        {...questions[updatedQuestionIndex], ...updatedQuestion},
+        ...questions.slice(updatedQuestionIndex + 1, questions.length)
+      ];
+
+      console.log("updated questions", updatedQuestions);
+
+      this.setState({questions: updatedQuestions});
+    }
+  };
+
+  handleDeleteQuestion = (event, questionId) => {
+    event.preventDefault();
+    const {questions} = this.state;
+
+    this.setState({questions: questions.filter(obj => obj.id !== questionId)});
+  };
+
+  render() {
+    const {isLoading, isSaving, minGroupSize, maxGroupSize, preferredGroupSize, questions} = this.state;
     if (isLoading) return <h3>Loading...</h3>;
 
     return (
-      <div>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-          est laborum.
-        </p><br/>
-        <form onSubmit={this.handleSubmit}>
-          <Grid>
-            <Row>
-              <Col>
-                <FormGroup controlId="title" bsSize="large">
-                  <ControlLabel>What's the title of your match?</ControlLabel>
-                  <HelpBlock>Typically it's the class name</HelpBlock>
-                  <FormControl
-                    autoFocus
-                    type="text"
-                    placeholder="E.g. Title or class"
-                    value={this.state.title}
-                    onChange={this.handleChange}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-          </Grid>
-          <Grid>
-            <Row>
-              <Col xs={12} md={3}>
-                <FormGroup controlId="minGroupSize">
-                  <ControlLabel>Min group size</ControlLabel>
-                  <FormControl
-                    componentClass="select"
-                    onChange={this.handleChange}
-                    value={minGroupSize}
-                  >
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                  </FormControl>
-                </FormGroup>
-              </Col>
-              <Col xs={12} md={3}>
-                <FormGroup controlId="maxGroupSize">
-                  <ControlLabel>Max group size</ControlLabel>
-                  <FormControl
-                    componentClass="select"
-                    onChange={this.handleChange}
-                    value={maxGroupSize}
-                  >
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                  </FormControl>
-                </FormGroup>
-              </Col>
-              <Col xs={12} md={3}>
-                <FormGroup controlId="preferredGroupSize">
-                  <ControlLabel>Preferred group size</ControlLabel>
-                  <FormControl
-                    componentClass="select"
-                    onChange={this.handleChange}
-                    value={preferredGroupSize}
-                  >
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                  </FormControl>
-                </FormGroup>
-              </Col>
-            </Row>
-          </Grid>
-          <br/>
-          <p>... [questions placeholder]...</p>
-          <br/>
-          <Grid>
-            <Row>
-              <Col xs={12} md={4}>
-                <LoaderButton
-                  block
-                  bsSize="large"
-                  disabled={!this.validateForm()}
-                  type="button"
-                  isLoading={isSaving}
-                  text="Publish"
-                  loadingText="Publishing…"
-                  onClick={() => this.handlePublish()}
-                />
-              </Col>
-              <Col xs={12} mdOffset={2} md={4}>
-                <LoaderButton
-                  block
-                  bsStyle="success"
-                  bsSize="large"
-                  disabled={!this.validateForm()}
-                  type="submit"
-                  isLoading={isSaving}
-                  text="Save"
-                  loadingText="Saving…"
-                />
-              </Col>
-            </Row>
-          </Grid>
-        </form>
-      </div>
-    );
-  }
-
-  render() {
-    return (
       <div className="container">
-        {this.renderForm()}
+        <div>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore
+            magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+            commodo
+            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+            est laborum.
+          </p><br/>
+          <form onSubmit={this.handleSubmit}>
+            <Grid>
+              <Row>
+                <Col>
+                  <FormGroup controlId="title">
+                    <ControlLabel>What's the title of your match?</ControlLabel>
+                    <HelpBlock>Typically it's the class name</HelpBlock>
+                    <FormControl
+                      type="text"
+                      placeholder="E.g. Title or class"
+                      value={this.state.title}
+                      onChange={this.handleChange}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col xs={12} md={3}>
+                  <FormGroup controlId="minGroupSize">
+                    <ControlLabel>Min group size</ControlLabel>
+                    <FormControl
+                      componentClass="select"
+                      onChange={this.handleChange}
+                      value={minGroupSize}
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                    </FormControl>
+                  </FormGroup>
+                </Col>
+                <Col xs={12} md={3}>
+                  <FormGroup controlId="maxGroupSize">
+                    <ControlLabel>Max group size</ControlLabel>
+                    <FormControl
+                      componentClass="select"
+                      onChange={this.handleChange}
+                      value={maxGroupSize}
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                    </FormControl>
+                  </FormGroup>
+                </Col>
+                <Col xs={12} md={3}>
+                  <FormGroup controlId="preferredGroupSize">
+                    <ControlLabel>Preferred group size</ControlLabel>
+                    <FormControl
+                      componentClass="select"
+                      onChange={this.handleChange}
+                      value={preferredGroupSize}
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                    </FormControl>
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row className="questionBtnContainer">
+                <Col>
+                  <button className="addQuestion" onClick={this.handleAddNewQuestion}>+</button>
+                  <label>Add new question</label>
+                </Col>
+              </Row>
+              {questions.map((question, index) =>
+                <Row key={question.id} className="questionFormContainer">
+                  <Col>
+                    <QuestionContainer
+                      questionNumber={index + 1}
+                      question={question}
+                      updateQuestion={this.handleUpdateQuestion}
+                      deleteQuestion={this.handleDeleteQuestion}
+                    />
+                  </Col>
+                </Row>
+              )}
+              <Row className="buttonsContainer">
+                <Col xs={12} md={4}>
+                  <LoaderButton
+                    block
+                    bsSize="large"
+                    disabled={!this.validateForm()}
+                    type="button"
+                    isLoading={isSaving}
+                    text="Publish"
+                    loadingText="Publishing…"
+                    onClick={() => this.handlePublish()}
+                  />
+                </Col>
+                <Col xs={12} mdOffset={2} md={4}>
+                  <LoaderButton
+                    block
+                    bsStyle="success"
+                    bsSize="large"
+                    disabled={!this.validateForm()}
+                    type="submit"
+                    isLoading={isSaving}
+                    text="Save"
+                    loadingText="Saving…"
+                  />
+                </Col>
+              </Row>
+            </Grid>
+          </form>
+        </div>
       </div>
     );
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  const {match: {params}} = ownProps;
+
+  let survey = {...SURVEY_INITIAL_STATE};
+  if (params && params.id && state.surveys) {
+    survey = state.surveys.find(obj => obj.id === params.id);
+  }
+
+  return {survey};
+};
+
+// export default QuizForm;
+export default connect(
+  mapStateToProps
+)(QuizForm);

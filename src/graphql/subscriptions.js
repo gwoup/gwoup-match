@@ -7,11 +7,10 @@ export const onCreateQuiz = `subscription OnCreateQuiz {
     title
     description
     questions {
-      id
       type
       title
       description
-      questionsJsonStrincture
+      jsonStructure
     }
     minGroupSize
     maxGroupSize
@@ -43,11 +42,10 @@ export const onUpdateQuiz = `subscription OnUpdateQuiz {
     title
     description
     questions {
-      id
       type
       title
       description
-      questionsJsonStrincture
+      jsonStructure
     }
     minGroupSize
     maxGroupSize
@@ -79,11 +77,10 @@ export const onDeleteQuiz = `subscription OnDeleteQuiz {
     title
     description
     questions {
-      id
       type
       title
       description
-      questionsJsonStrincture
+      jsonStructure
     }
     minGroupSize
     maxGroupSize

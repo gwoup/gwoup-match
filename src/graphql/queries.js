@@ -7,11 +7,10 @@ export const fetchQuiz = `query FetchQuiz($id: ID!) {
     title
     description
     questions {
-      id
       type
       title
       description
-      questionsJsonStrincture
+      jsonStructure
     }
     minGroupSize
     maxGroupSize
@@ -48,11 +47,10 @@ export const listQuizzes = `query ListQuizzes(
       title
       description
       questions {
-        id
         type
         title
         description
-        questionsJsonStrincture
+        jsonStructure
       }
       minGroupSize
       maxGroupSize
@@ -81,11 +79,10 @@ export const getGroup = `query GetGroup($id: ID!) {
       title
       description
       questions {
-        id
         type
         title
         description
-        questionsJsonStrincture
+        jsonStructure
       }
       minGroupSize
       maxGroupSize

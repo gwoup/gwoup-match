@@ -1,0 +1,29 @@
+.questionCellHeader {
+    background-color: lightgray;
+    font-size: 12px;
+}
+
+.questionCellHeader .label {
+    /*padding: 3px 20px;*/
+}
+
+.questionCellData {
+    padding: 5px 15px 2px;
+}
+
+.questionCellData .cellLabel {
+    font-size: 12px;
+    border: 1px solid;
+    float: left;
+    border-radius: 4px;
+    width: 60%;
+    text-align: center;
+    background-color: darkblue;
+    color: white;
+    padding: 3px 0;
+}
+
+.questionCellData .checkbox {
+    float: right;
+    margin: 0;
+}

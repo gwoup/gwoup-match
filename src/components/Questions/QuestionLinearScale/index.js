@@ -39,7 +39,7 @@ export default class QuestionLinearScale extends Component {
     return "QuestionLinearScale";
   }
 
-  static get structure() {
+  static get defaultVal() {
     return {
       minValue: 1,
       minValueTitle: "Not important at all",

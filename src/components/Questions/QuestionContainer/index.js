@@ -9,12 +9,13 @@ import {
 } from "react-bootstrap";
 import {v4 as uuidv4} from "uuid";
 import QuestionLinearScale from '../QuestionLinearScale/index';
+import QuestionDateTime from '../QuestionDateTime/index';
 
 import './index.css';
 
 const QUESTION_TYPES = [
   {label: 'Linear scale', type: QuestionLinearScale.questionType},
-  {label: 'Date grid', type: 'QuestionDateGrid'},
+  {label: 'Date grid', type: QuestionDateTime.questionType},
 ];
 
 
@@ -22,26 +23,55 @@ class QuestionContainer extends Component {
   constructor(props) {
     super(props);
 
-    // this.state = {...this.props.question};
     const {id, title, questionType} = this.props.question;
-
     this.state = {
       id,
       title,
-      questionType//: props.question.questionType
+      questionType
     }
   }
 
   static getNewQuestion() {
-    let newQuestion = {...QuestionLinearScale.structure};
+    let newQuestion = {...QuestionLinearScale.defaultVal};
     newQuestion.id = uuidv4();
 
     return newQuestion;
   }
 
-  static getQuestionsStructure() {
-    return QuestionLinearScale.structure;
-  }
+  getQuestionByType = (questionType=QuestionLinearScale.questionType, question) => {
+    if (questionType === QuestionLinearScale.questionType) {
+      return (
+        <QuestionLinearScale
+          question={question}
+          updateQuestion={this.handleUpdateQuestion}
+        />
+      )
+    } else if (questionType === QuestionDateTime.questionType) {
+      return (
+        <QuestionDateTime
+          question={question}
+          updateQuestion={this.handleUpdateQuestion}
+        />
+      )
+    } else {
+      return null;
+    }
+  };
+
+  handleQuestionTypeChange = event => {
+    let question = {};
+    const questionType = event.target.value;
+
+    if (questionType === QuestionLinearScale.questionType) {
+      question = QuestionLinearScale.defaultVal;
+    } else if (questionType === QuestionDateTime.questionType) {
+      question = QuestionDateTime.defaultVal;
+    }
+
+    this.setState({questionType}, () => {
+      this.handleUpdateQuestion(question);
+    });
+  };
 
   handleChange = event => {
     this.setState({
@@ -100,7 +130,7 @@ class QuestionContainer extends Component {
             <FormGroup controlId="questionType">
               <FormControl
                 componentClass="select"
-                onChange={this.handleChange}
+                onChange={this.handleQuestionTypeChange}
                 value={questionType}
               >
                 {questionTypes}
@@ -108,10 +138,7 @@ class QuestionContainer extends Component {
             </FormGroup>
           </Col>
         </Row>
-        <QuestionLinearScale
-          question={question}
-          updateQuestion={this.handleUpdateQuestion}
-        />
+        {this.getQuestionByType(questionType, question)}
       </Grid>
     );
   }

@@ -86,8 +86,8 @@ class Quizzes extends Component {
             this.props.initSurveys(surveys);
 
             if (error) return <h3>Error</h3>;
-            if (loading || !listQuizzes) return <h3>Loading...</h3>;
-            return (<ListView quizzes={listQuizzes.items && listQuizzes.items.length ? listQuizzes.items : []}/>);
+            if (loading) return <h3>Loading...</h3>;
+            return (<ListView quizzes={surveys}/>);
           }}
         </Connect>
       </div>

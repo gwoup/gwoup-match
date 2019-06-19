@@ -57,8 +57,8 @@ class QuizForm extends Component {
 
       try {
         const survey = await this.props.getSurveyById(params.id);
-        console.log('getSurveyById', survey);
         const {title, minGroupSize, maxGroupSize, preferredGroupSize, questions} = survey;
+
         this.setState({
           id: params.id,
           title,
@@ -105,6 +105,7 @@ class QuizForm extends Component {
     const isCreateOperation = this.isCreateOp(id);
 
     const survey = {
+      id: null,
       title,
       minGroupSize,
       maxGroupSize,
@@ -119,6 +120,8 @@ class QuizForm extends Component {
     if (!isCreateOperation) {
       survey.id = id;
     }
+
+    console.log('saved survey', survey);
 
     this.props.saveSurvey(survey);
     this.props.history.push('/quizzes');
@@ -158,7 +161,6 @@ class QuizForm extends Component {
   handleUpdateQuestion = (updatedQuestion) => {
     let updatedQuestionIndex = -1;
     const {questions} = this.state;
-    console.log("questions has to be updated");
 
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].id === updatedQuestion.id) {
@@ -168,9 +170,19 @@ class QuizForm extends Component {
     }
 
     if (updatedQuestionIndex > -1) {
+      if (questions[updatedQuestionIndex].questionType === updatedQuestion) {
+        updatedQuestion = {...questions[updatedQuestionIndex], ...updatedQuestion};
+      } else {
+        const {title} = questions[updatedQuestionIndex];
+        updatedQuestion = {
+          title,
+          ...updatedQuestion
+        };
+      }
+
       let updatedQuestions = [
         ...questions.slice(0, updatedQuestionIndex),
-        {...questions[updatedQuestionIndex], ...updatedQuestion},
+        updatedQuestion,
         ...questions.slice(updatedQuestionIndex + 1, questions.length)
       ];
 

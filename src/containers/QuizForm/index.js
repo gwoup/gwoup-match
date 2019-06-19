@@ -169,8 +169,8 @@ class QuizForm extends Component {
       }
     }
 
-    if (updatedQuestionIndex > -1) {
-      if (questions[updatedQuestionIndex].questionType === updatedQuestion) {
+    if (updatedQuestionIndex !== -1) {
+      if (questions[updatedQuestionIndex].questionType === updatedQuestion.questionType) {
         updatedQuestion = {...questions[updatedQuestionIndex], ...updatedQuestion};
       } else {
         const {title} = questions[updatedQuestionIndex];

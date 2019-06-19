@@ -34,17 +34,15 @@ enum QuizStatus {
 }
 
 enum QuestionsType {
-  LINEAR
-  WEEKDAY
-  WEEKDAYTIME
+  QuestionLinearScale
+  QuestionDateTime
 }
 
 type Question {
-  id: ID!
   type: QuestionsType
   title: String!
   description: String
-  questionsJsonStrincture: String!
+  jsonStructure: String!
 }
 
 type Group @model ( subscriptions: null )

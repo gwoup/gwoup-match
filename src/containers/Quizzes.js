@@ -17,7 +17,7 @@ class Quizzes extends Component {
   constructor(props) {
     super(props);
 
-    this.subscription = undefined;
+    // this.subscription = undefined;
   }
 
   handleDeleteQuiz = quizId => {
@@ -27,11 +27,12 @@ class Quizzes extends Component {
   handleSubscriptions = (prev, newData) => {
     if (newData.onCreateQuiz) {
       const quizzes = [...prev.listQuizzes.items];
+      console.log(`survey "${newData.onCreateQuiz.title}" created`);
       prev.listQuizzes.items = [newData.onCreateQuiz, ...quizzes];
     }
 
     if (newData.onDeleteQuiz) {
-      console.log(`quiz "${newData.onDeleteQuiz.title}" deleted`);
+      console.log(`survey "${newData.onDeleteQuiz.title}" deleted`);
       prev.listQuizzes.items = prev.listQuizzes.items.filter(item => item.id !== newData.onDeleteQuiz.id);
     }
 

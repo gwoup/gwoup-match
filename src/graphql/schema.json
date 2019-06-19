@@ -261,7 +261,7 @@
             "name" : null,
             "ofType" : {
               "kind" : "ENUM",
-              "name" : "QuizStatus",
+              "name" : "SurveyStatus",
               "ofType" : null
             }
           },
@@ -313,7 +313,7 @@
               "name" : null,
               "ofType" : {
                 "kind" : "OBJECT",
-                "name" : "QuizResponse",
+                "name" : "SurveyResponse",
                 "ofType" : null
               }
             }
@@ -395,6 +395,21 @@
         "name" : "Question",
         "description" : null,
         "fields" : [ {
+          "name" : "questionId",
+          "description" : null,
+          "args" : [ ],
+          "type" : {
+            "kind" : "NON_NULL",
+            "name" : null,
+            "ofType" : {
+              "kind" : "SCALAR",
+              "name" : "String",
+              "ofType" : null
+            }
+          },
+          "isDeprecated" : false,
+          "deprecationReason" : null
+        }, {
           "name" : "type",
           "description" : null,
           "args" : [ ],
@@ -481,7 +496,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "ENUM",
-        "name" : "QuizStatus",
+        "name" : "SurveyStatus",
         "description" : null,
         "fields" : null,
         "inputFields" : null,
@@ -510,7 +525,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "OBJECT",
-        "name" : "QuizResponse",
+        "name" : "SurveyResponse",
         "description" : null,
         "fields" : [ {
           "name" : "respondent",
@@ -571,7 +586,7 @@
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
-          "name" : "response",
+          "name" : "jsonResponse",
           "description" : null,
           "args" : [ ],
           "type" : {
@@ -1085,7 +1100,7 @@
           "description" : null,
           "type" : {
             "kind" : "INPUT_OBJECT",
-            "name" : "ModelQuizStatusFilterInput",
+            "name" : "ModelSurveyStatusFilterInput",
             "ofType" : null
           },
           "defaultValue" : null
@@ -1242,7 +1257,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "INPUT_OBJECT",
-        "name" : "ModelQuizStatusFilterInput",
+        "name" : "ModelSurveyStatusFilterInput",
         "description" : null,
         "fields" : null,
         "inputFields" : [ {
@@ -1250,7 +1265,7 @@
           "description" : null,
           "type" : {
             "kind" : "ENUM",
-            "name" : "QuizStatus",
+            "name" : "SurveyStatus",
             "ofType" : null
           },
           "defaultValue" : null
@@ -1259,7 +1274,7 @@
           "description" : null,
           "type" : {
             "kind" : "ENUM",
-            "name" : "QuizStatus",
+            "name" : "SurveyStatus",
             "ofType" : null
           },
           "defaultValue" : null
@@ -1520,7 +1535,7 @@
             "name" : null,
             "ofType" : {
               "kind" : "ENUM",
-              "name" : "QuizStatus",
+              "name" : "SurveyStatus",
               "ofType" : null
             }
           },
@@ -1566,7 +1581,7 @@
               "name" : null,
               "ofType" : {
                 "kind" : "INPUT_OBJECT",
-                "name" : "QuizResponseInput",
+                "name" : "SurveyResponseInput",
                 "ofType" : null
               }
             }
@@ -1582,6 +1597,19 @@
         "description" : null,
         "fields" : null,
         "inputFields" : [ {
+          "name" : "questionId",
+          "description" : null,
+          "type" : {
+            "kind" : "NON_NULL",
+            "name" : null,
+            "ofType" : {
+              "kind" : "SCALAR",
+              "name" : "String",
+              "ofType" : null
+            }
+          },
+          "defaultValue" : null
+        }, {
           "name" : "type",
           "description" : null,
           "type" : {
@@ -1631,7 +1659,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "INPUT_OBJECT",
-        "name" : "QuizResponseInput",
+        "name" : "SurveyResponseInput",
         "description" : null,
         "fields" : null,
         "inputFields" : [ {
@@ -1687,7 +1715,7 @@
           },
           "defaultValue" : null
         }, {
-          "name" : "response",
+          "name" : "jsonResponse",
           "description" : null,
           "type" : {
             "kind" : "NON_NULL",
@@ -1784,7 +1812,7 @@
           "description" : null,
           "type" : {
             "kind" : "ENUM",
-            "name" : "QuizStatus",
+            "name" : "SurveyStatus",
             "ofType" : null
           },
           "defaultValue" : null
@@ -1818,7 +1846,7 @@
             "name" : null,
             "ofType" : {
               "kind" : "INPUT_OBJECT",
-              "name" : "QuizResponseInput",
+              "name" : "SurveyResponseInput",
               "ofType" : null
             }
           },
@@ -2971,23 +2999,6 @@
         "onFragment" : false,
         "onField" : false
       }, {
-        "name" : "deprecated",
-        "description" : null,
-        "locations" : [ "FIELD_DEFINITION", "ENUM_VALUE" ],
-        "args" : [ {
-          "name" : "reason",
-          "description" : null,
-          "type" : {
-            "kind" : "SCALAR",
-            "name" : "String",
-            "ofType" : null
-          },
-          "defaultValue" : "\"No longer supported\""
-        } ],
-        "onOperation" : false,
-        "onFragment" : false,
-        "onField" : false
-      }, {
         "name" : "aws_auth",
         "description" : "Directs the schema to enforce authorization on a field",
         "locations" : [ "FIELD_DEFINITION" ],
@@ -3033,6 +3044,23 @@
             }
           },
           "defaultValue" : null
+        } ],
+        "onOperation" : false,
+        "onFragment" : false,
+        "onField" : false
+      }, {
+        "name" : "deprecated",
+        "description" : null,
+        "locations" : [ "FIELD_DEFINITION", "ENUM_VALUE" ],
+        "args" : [ {
+          "name" : "reason",
+          "description" : null,
+          "type" : {
+            "kind" : "SCALAR",
+            "name" : "String",
+            "ofType" : null
+          },
+          "defaultValue" : "\"No longer supported\""
         } ],
         "onOperation" : false,
         "onFragment" : false,

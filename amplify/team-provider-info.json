@@ -1,18 +1,18 @@
 {
     "dev": {
         "awscloudformation": {
-            "AuthRoleName": "gwoup-dev-20190612220202-authRole",
-            "UnauthRoleArn": "arn:aws:iam::565725559538:role/gwoup-dev-20190612220202-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::565725559538:role/gwoup-dev-20190612220202-authRole",
+            "AuthRoleName": "gwoup-dev-20190619115825-authRole",
+            "UnauthRoleArn": "arn:aws:iam::565725559538:role/gwoup-dev-20190619115825-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::565725559538:role/gwoup-dev-20190619115825-authRole",
             "Region": "us-west-2",
-            "DeploymentBucketName": "gwoup-dev-20190612220202-deployment",
-            "UnauthRoleName": "gwoup-dev-20190612220202-unauthRole",
-            "StackName": "gwoup-dev-20190612220202",
-            "StackId": "arn:aws:cloudformation:us-west-2:565725559538:stack/gwoup-dev-20190612220202/90ca9980-8d44-11e9-917c-0254f5c7f298"
+            "DeploymentBucketName": "gwoup-dev-20190619115825-deployment",
+            "UnauthRoleName": "gwoup-dev-20190619115825-unauthRole",
+            "StackName": "gwoup-dev-20190619115825",
+            "StackId": "arn:aws:cloudformation:us-west-2:565725559538:stack/gwoup-dev-20190619115825/66de54f0-9270-11e9-8119-0254f5c7f298"
         },
         "categories": {
             "auth": {
-                "gwoup40a6d529": {}
+                "gwoupb6c0683b": {}
             }
         }
     }

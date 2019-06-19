@@ -19,14 +19,14 @@ type Quiz @model( queries: { get: "fetchQuiz", list: "listQuizzes", } )
   minGroupSize: Int!
   maxGroupSize: Int!
   preferredGroupSize: Int!
-  status: QuizStatus!
+  status: SurveyStatus!
   editors: [String]! @auth(rules: [{ allow: owner }])
   uKey: String!
-  responses: [QuizResponse]! @auth(rules: [{ allow: owner }])
-  groups: [Group]! @connection(name: "QuizGroups", sortField: "name")
+  responses: [SurveyResponse]! @auth(rules: [{ allow: owner }])
+  groups: [Group]! @connection(name: "SurveyGroups", sortField: "name")
 }
 
-enum QuizStatus {
+enum SurveyStatus {
   DRAFT
   PUBLISHED
   VOTED
@@ -39,6 +39,7 @@ enum QuestionsType {
 }
 
 type Question {
+  questionId: String!
   type: QuestionsType
   title: String!
   description: String
@@ -50,15 +51,15 @@ type Group @model ( subscriptions: null )
   id: ID!
   name: String
   members: [String]!
-  quiz: Quiz @connection(name: "QuizGroups")
+  quiz: Quiz @connection(name: "SurveyGroups")
 }
 
 type Response {
   questionId: String!
-  response: String!
+  jsonResponse: String!
 }
 
-type QuizResponse {
+type SurveyResponse {
   respondent: String!
   response:[Response]!
 }

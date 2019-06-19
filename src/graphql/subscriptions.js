@@ -7,6 +7,7 @@ export const onCreateQuiz = `subscription OnCreateQuiz {
     title
     description
     questions {
+      questionId
       type
       title
       description
@@ -22,7 +23,7 @@ export const onCreateQuiz = `subscription OnCreateQuiz {
       respondent
       response {
         questionId
-        response
+        jsonResponse
       }
     }
     groups {
@@ -42,6 +43,7 @@ export const onUpdateQuiz = `subscription OnUpdateQuiz {
     title
     description
     questions {
+      questionId
       type
       title
       description
@@ -57,7 +59,7 @@ export const onUpdateQuiz = `subscription OnUpdateQuiz {
       respondent
       response {
         questionId
-        response
+        jsonResponse
       }
     }
     groups {
@@ -77,6 +79,7 @@ export const onDeleteQuiz = `subscription OnDeleteQuiz {
     title
     description
     questions {
+      questionId
       type
       title
       description
@@ -92,7 +95,7 @@ export const onDeleteQuiz = `subscription OnDeleteQuiz {
       respondent
       response {
         questionId
-        response
+        jsonResponse
       }
     }
     groups {

@@ -7,6 +7,7 @@ export const fetchQuiz = `query FetchQuiz($id: ID!) {
     title
     description
     questions {
+      questionId
       type
       title
       description
@@ -22,7 +23,7 @@ export const fetchQuiz = `query FetchQuiz($id: ID!) {
       respondent
       response {
         questionId
-        response
+        jsonResponse
       }
     }
     groups {
@@ -47,6 +48,7 @@ export const listQuizzes = `query ListQuizzes(
       title
       description
       questions {
+        questionId
         type
         title
         description
@@ -79,6 +81,7 @@ export const getGroup = `query GetGroup($id: ID!) {
       title
       description
       questions {
+        questionId
         type
         title
         description

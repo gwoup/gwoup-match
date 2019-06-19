@@ -7,6 +7,7 @@ export const createQuiz = `mutation CreateQuiz($input: CreateQuizInput!) {
     title
     description
     questions {
+      questionId
       type
       title
       description
@@ -22,7 +23,7 @@ export const createQuiz = `mutation CreateQuiz($input: CreateQuizInput!) {
       respondent
       response {
         questionId
-        response
+        jsonResponse
       }
     }
     groups {
@@ -42,6 +43,7 @@ export const updateQuiz = `mutation UpdateQuiz($input: UpdateQuizInput!) {
     title
     description
     questions {
+      questionId
       type
       title
       description
@@ -57,7 +59,7 @@ export const updateQuiz = `mutation UpdateQuiz($input: UpdateQuizInput!) {
       respondent
       response {
         questionId
-        response
+        jsonResponse
       }
     }
     groups {
@@ -77,6 +79,7 @@ export const deleteQuiz = `mutation DeleteQuiz($input: DeleteQuizInput!) {
     title
     description
     questions {
+      questionId
       type
       title
       description
@@ -92,7 +95,7 @@ export const deleteQuiz = `mutation DeleteQuiz($input: DeleteQuizInput!) {
       respondent
       response {
         questionId
-        response
+        jsonResponse
       }
     }
     groups {
@@ -116,6 +119,7 @@ export const createGroup = `mutation CreateGroup($input: CreateGroupInput!) {
       title
       description
       questions {
+        questionId
         type
         title
         description
@@ -147,6 +151,7 @@ export const updateGroup = `mutation UpdateGroup($input: UpdateGroupInput!) {
       title
       description
       questions {
+        questionId
         type
         title
         description
@@ -178,6 +183,7 @@ export const deleteGroup = `mutation DeleteGroup($input: DeleteGroupInput!) {
       title
       description
       questions {
+        questionId
         type
         title
         description

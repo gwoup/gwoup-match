@@ -9,10 +9,11 @@ const serializeQuestion = (question) => {
   if (question.questionType === QuestionLinearScale.questionType) {
     const {id, title, minValue, minValueTitle, maxValue, maxValueTitle, questionType} = question;
     return {
+      questionId: id,
       title,
       type: questionType,
       jsonStructure: JSON.stringify({
-        id, minValue, minValueTitle, maxValue, maxValueTitle
+        minValue, minValueTitle, maxValue, maxValueTitle
       })
     };
   }
@@ -20,10 +21,11 @@ const serializeQuestion = (question) => {
   if (question.questionType === QuestionDateTime.questionType) {
     const {id, title, dateValue, questionType} = question;
     return {
+      questionId: id,
       title,
       type: questionType,
       jsonStructure: JSON.stringify({
-        id, dateValue
+        dateValue
       })
     };
   }
@@ -33,10 +35,10 @@ const serializeQuestion = (question) => {
 
 const deserializeQuestion = (question) => {
   if (question.type === QuestionLinearScale.questionType) {
-    const {title, type, jsonStructure} = question;
-    const {id, minValue, minValueTitle, maxValue, maxValueTitle} = JSON.parse(jsonStructure);
+    const {questionId, title, type, jsonStructure} = question;
+    const {minValue, minValueTitle, maxValue, maxValueTitle} = JSON.parse(jsonStructure);
     return {
-      id,
+      id: questionId,
       title,
       questionType: type,
       minValue,
@@ -47,10 +49,10 @@ const deserializeQuestion = (question) => {
   }
 
   if (question.type === QuestionDateTime.questionType) {
-    const {title, type, jsonStructure} = question;
-    const {id, dateValue} = JSON.parse(jsonStructure);
+    const {questionId, title, type, jsonStructure} = question;
+    const {dateValue} = JSON.parse(jsonStructure);
     return {
-      id,
+      id: questionId,
       title,
       questionType: type,
       dateValue

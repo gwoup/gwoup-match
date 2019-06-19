@@ -1,9 +1,10 @@
 export const onCreateOrDeleteQuiz = `subscription OnCreateOrDeleteQuiz {
-  onCreateQuiz {
+onCreateQuiz {
     id
     title
     description
     questions {
+      questionId
       type
       title
       description
@@ -14,12 +15,12 @@ export const onCreateOrDeleteQuiz = `subscription OnCreateOrDeleteQuiz {
     preferredGroupSize
     status
     editors
-    uKey
+    pin
     responses {
       respondent
       response {
         questionId
-        response
+        jsonResponse
       }
     }
     groups {
@@ -30,12 +31,14 @@ export const onCreateOrDeleteQuiz = `subscription OnCreateOrDeleteQuiz {
       }
       nextToken
     }
-  },
+  }
+,
   onDeleteQuiz {
     id
     title
     description
     questions {
+      questionId
       type
       title
       description
@@ -46,12 +49,12 @@ export const onCreateOrDeleteQuiz = `subscription OnCreateOrDeleteQuiz {
     preferredGroupSize
     status
     editors
-    uKey
+    pin
     responses {
       respondent
       response {
         questionId
-        response
+        jsonResponse
       }
     }
     groups {

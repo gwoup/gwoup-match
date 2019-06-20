@@ -10,6 +10,7 @@ const Types = {
   GET_SURVEY_BY_ID: "GET_SURVEY_BY_ID",
   GET_SURVEY_BY_PIN: "GET_SURVEY_BY_PIN",
   GET_SURVEY_FAILURE: "GET_SURVEY_FAILURE",
+  RESET_MATCHING_SURVEY: "RESET_MATCHING_SURVEY",
 };
 
 const SurveyStatuses = {
@@ -58,13 +59,15 @@ const getPublishedSurveyByPin = (pin) => {
     };
 
     try {
+      dispatch({type: Types.RESET_MATCHING_SURVEY});
+
       const result = await API.graphql(graphqlOperation(getSurveyByPin, {pin}));
       const survey = result.data.getSurveyByPin.items.length ? result.data.getSurveyByPin.items[0] : null;
       if (survey && survey.status === SurveyStatuses.PUBLISHED) {
         return onSuccess(survey);
       }
-      return onSuccess(null);
 
+      return onSuccess(null);
     } catch (error) {
       return onError(error);
     }

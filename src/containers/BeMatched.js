@@ -28,16 +28,19 @@ class BeMatched extends Component {
     this.setState({isFetching: true});
     const survey = await this.props.getPublishedSurveyByPin(this.state.pin.toUpperCase());
 
-    if(survey) {
+    if (survey) {
       this.setState({
         validationState: null,
-        errorMsg:null,
+        errorMsg: null,
         pin: ""
       });
+
+      this.props.history.push('/bematched/survey');
+
     } else {
       this.setState({
         validationState: "error",
-        errorMsg:"Survey is not available. Plz check your PIN",
+        errorMsg: "Survey is not available. Plz check your PIN",
         pin: ""
       });
     }

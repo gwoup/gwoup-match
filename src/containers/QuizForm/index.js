@@ -352,7 +352,7 @@ const mapStateToProps = (state, ownProps) => {
 
   let survey = {...SURVEY_INITIAL_STATE};
   if (params && params.id && state.surveys) {
-    survey = state.surveys.find(obj => obj.id === params.id);
+    survey = state.surveys.collection.find(obj => obj.id === params.id);
   }
 
   return {survey};

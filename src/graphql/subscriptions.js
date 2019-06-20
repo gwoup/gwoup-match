@@ -1,8 +1,8 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
 
-export const onCreateQuiz = `subscription OnCreateQuiz {
-  onCreateQuiz {
+export const onCreateSurvey = `subscription OnCreateSurvey {
+  onCreateSurvey {
     id
     title
     description
@@ -18,7 +18,7 @@ export const onCreateQuiz = `subscription OnCreateQuiz {
     preferredGroupSize
     status
     editors
-    uKey
+    pin
     responses {
       respondent
       response {
@@ -37,8 +37,8 @@ export const onCreateQuiz = `subscription OnCreateQuiz {
   }
 }
 `;
-export const onUpdateQuiz = `subscription OnUpdateQuiz {
-  onUpdateQuiz {
+export const onUpdateSurvey = `subscription OnUpdateSurvey {
+  onUpdateSurvey {
     id
     title
     description
@@ -54,7 +54,7 @@ export const onUpdateQuiz = `subscription OnUpdateQuiz {
     preferredGroupSize
     status
     editors
-    uKey
+    pin
     responses {
       respondent
       response {
@@ -73,8 +73,8 @@ export const onUpdateQuiz = `subscription OnUpdateQuiz {
   }
 }
 `;
-export const onDeleteQuiz = `subscription OnDeleteQuiz {
-  onDeleteQuiz {
+export const onDeleteSurvey = `subscription OnDeleteSurvey {
+  onDeleteSurvey {
     id
     title
     description
@@ -90,7 +90,7 @@ export const onDeleteQuiz = `subscription OnDeleteQuiz {
     preferredGroupSize
     status
     editors
-    uKey
+    pin
     responses {
       respondent
       response {

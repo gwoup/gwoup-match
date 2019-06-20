@@ -100,12 +100,11 @@ class QuizForm extends Component {
 
   saveQuiz = async () => {
     this.setState({isSaving: true});
-    const {id, title, minGroupSize, maxGroupSize, preferredGroupSize, status, uKey, questions} = this.state;
+    const {id, title, minGroupSize, maxGroupSize, preferredGroupSize, status, pin, questions} = this.state;
 
     const isCreateOperation = this.isCreateOp(id);
 
     const survey = {
-      id: null,
       title,
       minGroupSize,
       maxGroupSize,
@@ -114,7 +113,7 @@ class QuizForm extends Component {
       status,
       responses: [],
       editors: ["alex.com.ua@gmail.com"],
-      uKey: isCreateOperation ? this.getRandomKey(6) : uKey
+      pin: isCreateOperation ? this.getRandomKey(6) : pin
     };
 
     if (!isCreateOperation) {

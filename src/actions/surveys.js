@@ -1,13 +1,22 @@
 import {API, graphqlOperation} from "aws-amplify";
-import {createQuiz, updateQuiz} from "../graphql/mutations";
-import {fetchQuiz} from "../graphql/queries";
+import {createSurvey, updateSurvey} from "../graphql/mutations";
+import {fetchSurvey} from "../graphql/queries";
+import {getSurveyByPin} from "../graphql/customQueries";
 
 const Types = {
   INIT_SURVEYS: "INIT_SURVEYS",
   ADD_SURVEY: "ADD_SURVEY",
   ADD_SURVEY_FAILURE: "ADD_SURVEY_FAILURE",
   GET_SURVEY_BY_ID: "GET_SURVEY_BY_ID",
+  GET_SURVEY_BY_PIN: "GET_SURVEY_BY_PIN",
   GET_SURVEY_FAILURE: "GET_SURVEY_FAILURE",
+};
+
+const SurveyStatuses = {
+  DRAFT: "DRAFT",
+  PUBLISHED: "PUBLISHED",
+  VOTED: "VOTED",
+  CLOSED: "CLOSED"
 };
 
 const initSurveys = surveys => ({
@@ -28,8 +37,34 @@ const getSurveyById = (surveyId) => {
     };
 
     try {
-      const result = await API.graphql(graphqlOperation(fetchQuiz, {id: surveyId}));
-      return onSuccess(result.data.fetchQuiz);
+      const result = await API.graphql(graphqlOperation(fetchSurvey, {id: surveyId}));
+      return onSuccess(result.data.fetchSurvey);
+    } catch (error) {
+      return onError(error);
+    }
+  }
+};
+
+const getPublishedSurveyByPin = (pin) => {
+  return async dispatch => {
+    const onSuccess = (success) => {
+      dispatch({type: Types.GET_SURVEY_BY_PIN, payload: success});
+      return success;
+    };
+
+    const onError = (error) => {
+      dispatch({type: Types.GET_SURVEY_FAILURE, error});
+      return error;
+    };
+
+    try {
+      const result = await API.graphql(graphqlOperation(getSurveyByPin, {pin}));
+      const survey = result.data.getSurveyByPin.items.length ? result.data.getSurveyByPin.items[0] : null;
+      if (survey && survey.status === SurveyStatuses.PUBLISHED) {
+        return onSuccess(survey);
+      }
+      return onSuccess(null);
+
     } catch (error) {
       return onError(error);
     }
@@ -52,13 +87,16 @@ const saveSurvey = (survey) => {
     try {
       let graphQlOp, graphQlFieldOp;
 
-      if (survey.id === null) {
-        graphQlOp = createQuiz;
-        graphQlFieldOp = "createQuiz";
+      if (survey.id === null || typeof survey.id === "undefined") {
+        graphQlOp = createSurvey;
+        graphQlFieldOp = "createSurvey";
       } else {
-        graphQlOp = updateQuiz;
-        graphQlFieldOp = "updateQuiz";
+        graphQlOp = updateSurvey;
+        graphQlFieldOp = "updateSurvey";
       }
+
+      console.log(survey);
+      console.log(graphQlFieldOp);
 
       const result = await API.graphql(graphqlOperation(graphQlOp, {input: survey}));
       return onSuccess(result.data[graphQlFieldOp]);
@@ -73,5 +111,7 @@ export {
   initSurveys,
   saveSurvey,
   getSurveyById,
-  Types
+  getPublishedSurveyByPin,
+  Types,
+  SurveyStatuses
 };

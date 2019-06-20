@@ -4,15 +4,15 @@ import {graphqlOperation} from "aws-amplify";
 import {Connect} from "aws-amplify-react";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
-import {listQuizzes} from "../graphql/queries";
-import {deleteQuiz} from "../graphql/mutations";
-import {onCreateOrDeleteQuiz} from "../graphql/customSubscriptions";
+import {listSurveys} from "../graphql/queries";
+import {deleteSurvey} from "../graphql/mutations";
+import {onCreateOrDeleteSurvey} from "../graphql/customSubscriptions";
 import QuizRow from "../components/QuizRow/index";
 import {initSurveys} from "../actions/surveys";
 
 
 class Quizzes extends Component {
-  quizDeleteMutation = null;
+  surveyDeleteMutation = null;
 
   constructor(props) {
     super(props);
@@ -21,19 +21,19 @@ class Quizzes extends Component {
   }
 
   handleDeleteQuiz = quizId => {
-    this.quizDeleteMutation({input: {id: quizId}});
+    this.surveyDeleteMutation({input: {id: quizId}});
   };
 
   handleSubscriptions = (prev, newData) => {
-    if (newData.onCreateQuiz) {
-      const quizzes = [...prev.listQuizzes.items];
-      console.log(`survey "${newData.onCreateQuiz.title}" created`);
-      prev.listQuizzes.items = [newData.onCreateQuiz, ...quizzes];
+    if (newData.onCreateSurvey) {
+      const surveys = [...prev.listSurveys.items];
+      console.log(`survey "${newData.onCreateSurvey.title}" created`);
+      prev.listSurveys.items = [newData.onCreateSurvey, ...surveys];
     }
 
-    if (newData.onDeleteQuiz) {
-      console.log(`survey "${newData.onDeleteQuiz.title}" deleted`);
-      prev.listQuizzes.items = prev.listQuizzes.items.filter(item => item.id !== newData.onDeleteQuiz.id);
+    if (newData.onDeleteSurvey) {
+      console.log(`survey "${newData.onDeleteSurvey.title}" deleted`);
+      prev.listSurveys.items = prev.listSurveys.items.filter(item => item.id !== newData.onDeleteSurvey.id);
     }
 
     return prev;
@@ -54,7 +54,7 @@ class Quizzes extends Component {
             questionsNum={obj.questionsNum}
             expectedNum={obj.expectedNum}
             votesNum={obj.votesNum}
-            uKey={obj.uKey}
+            pin={obj.pin}
             id={obj.id}
             key={obj.id}
             deleteHandler={this.handleDeleteQuiz}
@@ -67,23 +67,26 @@ class Quizzes extends Component {
       <div className="container">
         <div className="row text-left">
           <Link to="/quizzes/new">
-            <button className="btn btn-success">Add new Quiz</button>
+            <button className="btn btn-success">Add new Survey</button>
           </Link>
         </div>
         <Connect
-          query={graphqlOperation(listQuizzes)}
-          mutation={graphqlOperation(deleteQuiz)}
-          subscription={graphqlOperation(onCreateOrDeleteQuiz)}
+          query={graphqlOperation(listSurveys)}
+          mutation={graphqlOperation(deleteSurvey)}
+          subscription={graphqlOperation(onCreateOrDeleteSurvey)}
           onSubscriptionMsg={this.handleSubscriptions}>
           {({data, loading, error, mutation}) => {
-            this.quizDeleteMutation = mutation;
+            this.surveyDeleteMutation = mutation;
 
-            if (typeof data == "undefined" || typeof data.listQuizzes == "undefined") {
-              data = {listQuizzes: []};
+            if (typeof data == "undefined" || typeof data.listSurveys == "undefined") {
+              data = {listSurveys: []};
             }
 
-            const {listQuizzes} = data;
-            const surveys = listQuizzes.items && listQuizzes.items.length ? listQuizzes.items : [];
+            const {listSurveys} = data;
+            const surveys = listSurveys.items && listSurveys.items.length ? listSurveys.items : [];
+
+            console.log(surveys);
+
             this.props.initSurveys(surveys);
 
             if (error) return <h3>Error</h3>;

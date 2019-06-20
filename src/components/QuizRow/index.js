@@ -4,7 +4,7 @@ import "./style.css";
 
 export default class QuizRow extends Component {
   render() {
-    const {id, title, status, questionsNum, expectedNum, votesNum, uKey, deleteHandler} = this.props;
+    const {id, title, status, questionsNum, expectedNum, votesNum, pin, deleteHandler} = this.props;
     return (
       <div className="row quizBox">
         <div className="col col-lg-6">
@@ -13,7 +13,7 @@ export default class QuizRow extends Component {
           <div>status: <b>{status}</b></div>
         </div>
         <div className="col col-lg-2">
-          <div>key: <b>{uKey}</b></div>
+          <div>pin: <b>{pin}</b></div>
         </div>
         <div className="col col-lg-2">
           <div>expected votes: {expectedNum}</div>

@@ -1,5 +1,5 @@
-export const onCreateOrDeleteQuiz = `subscription OnCreateOrDeleteQuiz {
-onCreateQuiz {
+export const onCreateOrDeleteSurvey = `subscription OnCreateOrDeleteQuiz {
+onCreateSurvey {
     id
     title
     description
@@ -33,7 +33,7 @@ onCreateQuiz {
     }
   }
 ,
-  onDeleteQuiz {
+  onDeleteSurvey {
     id
     title
     description

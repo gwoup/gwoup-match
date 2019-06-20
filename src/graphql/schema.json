@@ -15,7 +15,7 @@
         "name" : "Query",
         "description" : null,
         "fields" : [ {
-          "name" : "fetchQuiz",
+          "name" : "fetchSurvey",
           "description" : null,
           "args" : [ {
             "name" : "id",
@@ -33,20 +33,20 @@
           } ],
           "type" : {
             "kind" : "OBJECT",
-            "name" : "Quiz",
+            "name" : "Survey",
             "ofType" : null
           },
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
-          "name" : "listQuizzes",
+          "name" : "listSurveys",
           "description" : null,
           "args" : [ {
             "name" : "filter",
             "description" : null,
             "type" : {
               "kind" : "INPUT_OBJECT",
-              "name" : "ModelQuizFilterInput",
+              "name" : "ModelSurveyFilterInput",
               "ofType" : null
             },
             "defaultValue" : null
@@ -71,7 +71,7 @@
           } ],
           "type" : {
             "kind" : "OBJECT",
-            "name" : "ModelQuizConnection",
+            "name" : "ModelSurveyConnection",
             "ofType" : null
           },
           "isDeprecated" : false,
@@ -138,6 +138,53 @@
           },
           "isDeprecated" : false,
           "deprecationReason" : null
+        }, {
+          "name" : "getSurveyByPin",
+          "description" : null,
+          "args" : [ {
+            "name" : "pin",
+            "description" : null,
+            "type" : {
+              "kind" : "SCALAR",
+              "name" : "String",
+              "ofType" : null
+            },
+            "defaultValue" : null
+          }, {
+            "name" : "filter",
+            "description" : null,
+            "type" : {
+              "kind" : "INPUT_OBJECT",
+              "name" : "ModelSurveyFilterInput",
+              "ofType" : null
+            },
+            "defaultValue" : null
+          }, {
+            "name" : "limit",
+            "description" : null,
+            "type" : {
+              "kind" : "SCALAR",
+              "name" : "Int",
+              "ofType" : null
+            },
+            "defaultValue" : null
+          }, {
+            "name" : "nextToken",
+            "description" : null,
+            "type" : {
+              "kind" : "SCALAR",
+              "name" : "String",
+              "ofType" : null
+            },
+            "defaultValue" : null
+          } ],
+          "type" : {
+            "kind" : "OBJECT",
+            "name" : "ModelSurveyConnection",
+            "ofType" : null
+          },
+          "isDeprecated" : false,
+          "deprecationReason" : null
         } ],
         "inputFields" : null,
         "interfaces" : [ ],
@@ -145,7 +192,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "OBJECT",
-        "name" : "Quiz",
+        "name" : "Survey",
         "description" : null,
         "fields" : [ {
           "name" : "id",
@@ -199,9 +246,13 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "OBJECT",
-                "name" : "Question",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "OBJECT",
+                  "name" : "Question",
+                  "ofType" : null
+                }
               }
             }
           },
@@ -278,16 +329,20 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "SCALAR",
-                "name" : "String",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "SCALAR",
+                  "name" : "String",
+                  "ofType" : null
+                }
               }
             }
           },
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
-          "name" : "uKey",
+          "name" : "pin",
           "description" : null,
           "args" : [ ],
           "type" : {
@@ -312,9 +367,13 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "OBJECT",
-                "name" : "SurveyResponse",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "OBJECT",
+                  "name" : "SurveyResponse",
+                  "ofType" : null
+                }
               }
             }
           },
@@ -553,9 +612,13 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "OBJECT",
-                "name" : "Response",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "OBJECT",
+                  "name" : "Response",
+                  "ofType" : null
+                }
               }
             }
           },
@@ -681,21 +744,25 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "SCALAR",
-                "name" : "String",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "SCALAR",
+                  "name" : "String",
+                  "ofType" : null
+                }
               }
             }
           },
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
-          "name" : "quiz",
+          "name" : "survey",
           "description" : null,
           "args" : [ ],
           "type" : {
             "kind" : "OBJECT",
-            "name" : "Quiz",
+            "name" : "Survey",
             "ofType" : null
           },
           "isDeprecated" : false,
@@ -1003,7 +1070,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "OBJECT",
-        "name" : "ModelQuizConnection",
+        "name" : "ModelSurveyConnection",
         "description" : null,
         "fields" : [ {
           "name" : "items",
@@ -1014,7 +1081,7 @@
             "name" : null,
             "ofType" : {
               "kind" : "OBJECT",
-              "name" : "Quiz",
+              "name" : "Survey",
               "ofType" : null
             }
           },
@@ -1038,7 +1105,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "INPUT_OBJECT",
-        "name" : "ModelQuizFilterInput",
+        "name" : "ModelSurveyFilterInput",
         "description" : null,
         "fields" : null,
         "inputFields" : [ {
@@ -1114,7 +1181,7 @@
           },
           "defaultValue" : null
         }, {
-          "name" : "uKey",
+          "name" : "pin",
           "description" : null,
           "type" : {
             "kind" : "INPUT_OBJECT",
@@ -1130,7 +1197,7 @@
             "name" : null,
             "ofType" : {
               "kind" : "INPUT_OBJECT",
-              "name" : "ModelQuizFilterInput",
+              "name" : "ModelSurveyFilterInput",
               "ofType" : null
             }
           },
@@ -1143,7 +1210,7 @@
             "name" : null,
             "ofType" : {
               "kind" : "INPUT_OBJECT",
-              "name" : "ModelQuizFilterInput",
+              "name" : "ModelSurveyFilterInput",
               "ofType" : null
             }
           },
@@ -1153,7 +1220,7 @@
           "description" : null,
           "type" : {
             "kind" : "INPUT_OBJECT",
-            "name" : "ModelQuizFilterInput",
+            "name" : "ModelSurveyFilterInput",
             "ofType" : null
           },
           "defaultValue" : null
@@ -1287,7 +1354,7 @@
         "name" : "Mutation",
         "description" : null,
         "fields" : [ {
-          "name" : "createQuiz",
+          "name" : "createSurvey",
           "description" : null,
           "args" : [ {
             "name" : "input",
@@ -1297,7 +1364,7 @@
               "name" : null,
               "ofType" : {
                 "kind" : "INPUT_OBJECT",
-                "name" : "CreateQuizInput",
+                "name" : "CreateSurveyInput",
                 "ofType" : null
               }
             },
@@ -1305,13 +1372,13 @@
           } ],
           "type" : {
             "kind" : "OBJECT",
-            "name" : "Quiz",
+            "name" : "Survey",
             "ofType" : null
           },
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
-          "name" : "updateQuiz",
+          "name" : "updateSurvey",
           "description" : null,
           "args" : [ {
             "name" : "input",
@@ -1321,7 +1388,7 @@
               "name" : null,
               "ofType" : {
                 "kind" : "INPUT_OBJECT",
-                "name" : "UpdateQuizInput",
+                "name" : "UpdateSurveyInput",
                 "ofType" : null
               }
             },
@@ -1329,13 +1396,13 @@
           } ],
           "type" : {
             "kind" : "OBJECT",
-            "name" : "Quiz",
+            "name" : "Survey",
             "ofType" : null
           },
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
-          "name" : "deleteQuiz",
+          "name" : "deleteSurvey",
           "description" : null,
           "args" : [ {
             "name" : "input",
@@ -1345,7 +1412,7 @@
               "name" : null,
               "ofType" : {
                 "kind" : "INPUT_OBJECT",
-                "name" : "DeleteQuizInput",
+                "name" : "DeleteSurveyInput",
                 "ofType" : null
               }
             },
@@ -1353,7 +1420,7 @@
           } ],
           "type" : {
             "kind" : "OBJECT",
-            "name" : "Quiz",
+            "name" : "Survey",
             "ofType" : null
           },
           "isDeprecated" : false,
@@ -1437,7 +1504,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "INPUT_OBJECT",
-        "name" : "CreateQuizInput",
+        "name" : "CreateSurveyInput",
         "description" : null,
         "fields" : null,
         "inputFields" : [ {
@@ -1481,9 +1548,13 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "INPUT_OBJECT",
-                "name" : "QuestionInput",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "INPUT_OBJECT",
+                  "name" : "QuestionInput",
+                  "ofType" : null
+                }
               }
             }
           },
@@ -1550,15 +1621,19 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "SCALAR",
-                "name" : "String",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "SCALAR",
+                  "name" : "String",
+                  "ofType" : null
+                }
               }
             }
           },
           "defaultValue" : null
         }, {
-          "name" : "uKey",
+          "name" : "pin",
           "description" : null,
           "type" : {
             "kind" : "NON_NULL",
@@ -1580,9 +1655,13 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "INPUT_OBJECT",
-                "name" : "SurveyResponseInput",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "INPUT_OBJECT",
+                  "name" : "SurveyResponseInput",
+                  "ofType" : null
+                }
               }
             }
           },
@@ -1685,9 +1764,13 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "INPUT_OBJECT",
-                "name" : "ResponseInput",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "INPUT_OBJECT",
+                  "name" : "ResponseInput",
+                  "ofType" : null
+                }
               }
             }
           },
@@ -1733,7 +1816,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "INPUT_OBJECT",
-        "name" : "UpdateQuizInput",
+        "name" : "UpdateSurveyInput",
         "description" : null,
         "fields" : null,
         "inputFields" : [ {
@@ -1774,9 +1857,13 @@
             "kind" : "LIST",
             "name" : null,
             "ofType" : {
-              "kind" : "INPUT_OBJECT",
-              "name" : "QuestionInput",
-              "ofType" : null
+              "kind" : "NON_NULL",
+              "name" : null,
+              "ofType" : {
+                "kind" : "INPUT_OBJECT",
+                "name" : "QuestionInput",
+                "ofType" : null
+              }
             }
           },
           "defaultValue" : null
@@ -1823,14 +1910,18 @@
             "kind" : "LIST",
             "name" : null,
             "ofType" : {
-              "kind" : "SCALAR",
-              "name" : "String",
-              "ofType" : null
+              "kind" : "NON_NULL",
+              "name" : null,
+              "ofType" : {
+                "kind" : "SCALAR",
+                "name" : "String",
+                "ofType" : null
+              }
             }
           },
           "defaultValue" : null
         }, {
-          "name" : "uKey",
+          "name" : "pin",
           "description" : null,
           "type" : {
             "kind" : "SCALAR",
@@ -1845,9 +1936,13 @@
             "kind" : "LIST",
             "name" : null,
             "ofType" : {
-              "kind" : "INPUT_OBJECT",
-              "name" : "SurveyResponseInput",
-              "ofType" : null
+              "kind" : "NON_NULL",
+              "name" : null,
+              "ofType" : {
+                "kind" : "INPUT_OBJECT",
+                "name" : "SurveyResponseInput",
+                "ofType" : null
+              }
             }
           },
           "defaultValue" : null
@@ -1857,7 +1952,7 @@
         "possibleTypes" : null
       }, {
         "kind" : "INPUT_OBJECT",
-        "name" : "DeleteQuizInput",
+        "name" : "DeleteSurveyInput",
         "description" : null,
         "fields" : null,
         "inputFields" : [ {
@@ -1906,15 +2001,19 @@
               "kind" : "LIST",
               "name" : null,
               "ofType" : {
-                "kind" : "SCALAR",
-                "name" : "String",
-                "ofType" : null
+                "kind" : "NON_NULL",
+                "name" : null,
+                "ofType" : {
+                  "kind" : "SCALAR",
+                  "name" : "String",
+                  "ofType" : null
+                }
               }
             }
           },
           "defaultValue" : null
         }, {
-          "name" : "groupQuizId",
+          "name" : "groupSurveyId",
           "description" : null,
           "type" : {
             "kind" : "SCALAR",
@@ -1960,14 +2059,18 @@
             "kind" : "LIST",
             "name" : null,
             "ofType" : {
-              "kind" : "SCALAR",
-              "name" : "String",
-              "ofType" : null
+              "kind" : "NON_NULL",
+              "name" : null,
+              "ofType" : {
+                "kind" : "SCALAR",
+                "name" : "String",
+                "ofType" : null
+              }
             }
           },
           "defaultValue" : null
         }, {
-          "name" : "groupQuizId",
+          "name" : "groupSurveyId",
           "description" : null,
           "type" : {
             "kind" : "SCALAR",
@@ -2002,34 +2105,34 @@
         "name" : "Subscription",
         "description" : null,
         "fields" : [ {
-          "name" : "onCreateQuiz",
+          "name" : "onCreateSurvey",
           "description" : null,
           "args" : [ ],
           "type" : {
             "kind" : "OBJECT",
-            "name" : "Quiz",
+            "name" : "Survey",
             "ofType" : null
           },
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
-          "name" : "onUpdateQuiz",
+          "name" : "onUpdateSurvey",
           "description" : null,
           "args" : [ ],
           "type" : {
             "kind" : "OBJECT",
-            "name" : "Quiz",
+            "name" : "Survey",
             "ofType" : null
           },
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
-          "name" : "onDeleteQuiz",
+          "name" : "onDeleteSurvey",
           "description" : null,
           "args" : [ ],
           "type" : {
             "kind" : "OBJECT",
-            "name" : "Quiz",
+            "name" : "Survey",
             "ofType" : null
           },
           "isDeprecated" : false,
@@ -2037,6 +2140,42 @@
         } ],
         "inputFields" : null,
         "interfaces" : [ ],
+        "enumValues" : null,
+        "possibleTypes" : null
+      }, {
+        "kind" : "INPUT_OBJECT",
+        "name" : "ModelBooleanFilterInput",
+        "description" : null,
+        "fields" : null,
+        "inputFields" : [ {
+          "name" : "ne",
+          "description" : null,
+          "type" : {
+            "kind" : "SCALAR",
+            "name" : "Boolean",
+            "ofType" : null
+          },
+          "defaultValue" : null
+        }, {
+          "name" : "eq",
+          "description" : null,
+          "type" : {
+            "kind" : "SCALAR",
+            "name" : "Boolean",
+            "ofType" : null
+          },
+          "defaultValue" : null
+        } ],
+        "interfaces" : null,
+        "enumValues" : null,
+        "possibleTypes" : null
+      }, {
+        "kind" : "SCALAR",
+        "name" : "Boolean",
+        "description" : "Built-in Boolean",
+        "fields" : null,
+        "inputFields" : null,
+        "interfaces" : null,
         "enumValues" : null,
         "possibleTypes" : null
       }, {
@@ -2137,42 +2276,6 @@
         "kind" : "SCALAR",
         "name" : "Float",
         "description" : "Built-in Float",
-        "fields" : null,
-        "inputFields" : null,
-        "interfaces" : null,
-        "enumValues" : null,
-        "possibleTypes" : null
-      }, {
-        "kind" : "INPUT_OBJECT",
-        "name" : "ModelBooleanFilterInput",
-        "description" : null,
-        "fields" : null,
-        "inputFields" : [ {
-          "name" : "ne",
-          "description" : null,
-          "type" : {
-            "kind" : "SCALAR",
-            "name" : "Boolean",
-            "ofType" : null
-          },
-          "defaultValue" : null
-        }, {
-          "name" : "eq",
-          "description" : null,
-          "type" : {
-            "kind" : "SCALAR",
-            "name" : "Boolean",
-            "ofType" : null
-          },
-          "defaultValue" : null
-        } ],
-        "interfaces" : null,
-        "enumValues" : null,
-        "possibleTypes" : null
-      }, {
-        "kind" : "SCALAR",
-        "name" : "Boolean",
-        "description" : "Built-in Boolean",
         "fields" : null,
         "inputFields" : null,
         "interfaces" : null,
@@ -2962,6 +3065,23 @@
         "onFragment" : false,
         "onField" : true
       }, {
+        "name" : "deprecated",
+        "description" : null,
+        "locations" : [ "FIELD_DEFINITION", "ENUM_VALUE" ],
+        "args" : [ {
+          "name" : "reason",
+          "description" : null,
+          "type" : {
+            "kind" : "SCALAR",
+            "name" : "String",
+            "ofType" : null
+          },
+          "defaultValue" : "\"No longer supported\""
+        } ],
+        "onOperation" : false,
+        "onFragment" : false,
+        "onField" : false
+      }, {
         "name" : "aws_cognito_user_pools",
         "description" : "Tells the service this field/object has access authorized by a Cognito User Pools token.",
         "locations" : [ "OBJECT", "FIELD_DEFINITION" ],
@@ -3044,23 +3164,6 @@
             }
           },
           "defaultValue" : null
-        } ],
-        "onOperation" : false,
-        "onFragment" : false,
-        "onField" : false
-      }, {
-        "name" : "deprecated",
-        "description" : null,
-        "locations" : [ "FIELD_DEFINITION", "ENUM_VALUE" ],
-        "args" : [ {
-          "name" : "reason",
-          "description" : null,
-          "type" : {
-            "kind" : "SCALAR",
-            "name" : "String",
-            "ofType" : null
-          },
-          "defaultValue" : "\"No longer supported\""
         } ],
         "onOperation" : false,
         "onFragment" : false,

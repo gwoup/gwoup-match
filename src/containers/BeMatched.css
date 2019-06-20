@@ -1,4 +1,8 @@
 .BeMatched {
-  padding-top: 100px;
+  padding-top: 30px;
   text-align: center;
+}
+
+.BeMatched .form {
+  margin-top: 70px;
 }

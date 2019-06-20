@@ -1,8 +1,8 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
 
-export const createQuiz = `mutation CreateQuiz($input: CreateQuizInput!) {
-  createQuiz(input: $input) {
+export const createSurvey = `mutation CreateSurvey($input: CreateSurveyInput!) {
+  createSurvey(input: $input) {
     id
     title
     description
@@ -18,7 +18,7 @@ export const createQuiz = `mutation CreateQuiz($input: CreateQuizInput!) {
     preferredGroupSize
     status
     editors
-    uKey
+    pin
     responses {
       respondent
       response {
@@ -37,8 +37,8 @@ export const createQuiz = `mutation CreateQuiz($input: CreateQuizInput!) {
   }
 }
 `;
-export const updateQuiz = `mutation UpdateQuiz($input: UpdateQuizInput!) {
-  updateQuiz(input: $input) {
+export const updateSurvey = `mutation UpdateSurvey($input: UpdateSurveyInput!) {
+  updateSurvey(input: $input) {
     id
     title
     description
@@ -54,7 +54,7 @@ export const updateQuiz = `mutation UpdateQuiz($input: UpdateQuizInput!) {
     preferredGroupSize
     status
     editors
-    uKey
+    pin
     responses {
       respondent
       response {
@@ -73,8 +73,8 @@ export const updateQuiz = `mutation UpdateQuiz($input: UpdateQuizInput!) {
   }
 }
 `;
-export const deleteQuiz = `mutation DeleteQuiz($input: DeleteQuizInput!) {
-  deleteQuiz(input: $input) {
+export const deleteSurvey = `mutation DeleteSurvey($input: DeleteSurveyInput!) {
+  deleteSurvey(input: $input) {
     id
     title
     description
@@ -90,7 +90,7 @@ export const deleteQuiz = `mutation DeleteQuiz($input: DeleteQuizInput!) {
     preferredGroupSize
     status
     editors
-    uKey
+    pin
     responses {
       respondent
       response {
@@ -114,7 +114,7 @@ export const createGroup = `mutation CreateGroup($input: CreateGroupInput!) {
     id
     name
     members
-    quiz {
+    survey {
       id
       title
       description
@@ -130,7 +130,7 @@ export const createGroup = `mutation CreateGroup($input: CreateGroupInput!) {
       preferredGroupSize
       status
       editors
-      uKey
+      pin
       responses {
         respondent
       }
@@ -146,7 +146,7 @@ export const updateGroup = `mutation UpdateGroup($input: UpdateGroupInput!) {
     id
     name
     members
-    quiz {
+    survey {
       id
       title
       description
@@ -162,7 +162,7 @@ export const updateGroup = `mutation UpdateGroup($input: UpdateGroupInput!) {
       preferredGroupSize
       status
       editors
-      uKey
+      pin
       responses {
         respondent
       }
@@ -178,7 +178,7 @@ export const deleteGroup = `mutation DeleteGroup($input: DeleteGroupInput!) {
     id
     name
     members
-    quiz {
+    survey {
       id
       title
       description
@@ -194,7 +194,7 @@ export const deleteGroup = `mutation DeleteGroup($input: DeleteGroupInput!) {
       preferredGroupSize
       status
       editors
-      uKey
+      pin
       responses {
         respondent
       }

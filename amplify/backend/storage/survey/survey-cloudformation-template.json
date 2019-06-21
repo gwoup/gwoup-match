@@ -33,25 +33,22 @@
                 "AttributeDefinitions": [
                   
                   {
-                      "AttributeName": "ownerId",
-                      "AttributeType": "S"
-                  }  ,
-
-                  {
                       "AttributeName": "surveyId",
                       "AttributeType": "S"
-                  }  ,
+                  },
+                    {
+                        "AttributeName": "ownerId",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "status",
+                        "AttributeType": "S"
+                    }  ,
 
-                  {
-                      "AttributeName": "status",
-                      "AttributeType": "S"
-                  }  ,
-
-                  {
-                      "AttributeName": "pin",
-                      "AttributeType": "S"
-                  }
-                  
+                    {
+                        "AttributeName": "pin",
+                        "AttributeType": "S"
+                    }
                 ],
                 "KeySchema": [
                   
@@ -92,11 +89,11 @@
                 ,"GlobalSecondaryIndexes": [
 
                     {
-                        "IndexName": "surveyId",
+                        "IndexName": "ownerId",
                         "KeySchema": [
 
                             {
-                                "AttributeName": "surveyId",
+                                "AttributeName": "ownerId",
                                 "KeyType": "HASH"
                             }  ,
 

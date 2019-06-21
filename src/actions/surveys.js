@@ -8,6 +8,7 @@ const Types = {
   INIT_SURVEYS: "INIT_SURVEYS",
   ADD_SURVEY: "ADD_SURVEY",
   ADD_SURVEY_FAILURE: "ADD_SURVEY_FAILURE",
+  GET_SURVEYS_BY_OWNER: "GET_SURVEYS_BY_OWNER",
   GET_SURVEY_BY_ID: "GET_SURVEY_BY_ID",
   GET_SURVEY_BY_PIN: "GET_SURVEY_BY_PIN",
   GET_SURVEY_FAILURE: "GET_SURVEY_FAILURE",
@@ -21,12 +22,32 @@ const SurveyStatuses = {
   CLOSED: "CLOSED"
 };
 
-const initSurveys = surveys => ({
-  type: Types.INIT_SURVEYS,
-  payload: surveys
-});
+const getSurveys = ownerId =>{
+  return async dispatch => {
+    const onSuccess = (success) => {
+      dispatch({type: Types.GET_SURVEYS_BY_OWNER, payload: success});
+      return success;
+    };
 
-const getSurveyById = (surveyId) => {
+    const onError = (error) => {
+      dispatch({type: Types.GET_SURVEY_FAILURE, error});
+      return error;
+    };
+
+    try {
+      const result = await API.get('survey', '/surveys', {
+        queryStringParameters: {
+          ownerId:ownerId
+        }
+      });
+      return onSuccess(result.data);
+    } catch (error) {
+      return onError(error);
+    }
+  }
+};
+
+const getSurveyById = surveyId => {
   return async dispatch => {
     const onSuccess = (success) => {
       dispatch({type: Types.GET_SURVEY_BY_ID, payload: success});
@@ -143,7 +164,7 @@ const submitAnswer = (surveyId, answers) => {
 };
 
 export {
-  initSurveys,
+  getSurveys,
   saveSurvey,
   getSurveyById,
   getPublishedSurveyByPin,

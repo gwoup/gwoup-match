@@ -1,66 +1,50 @@
 import React, {Component} from "react";
-import {graphqlOperation} from "aws-amplify";
-import {Connect} from "aws-amplify-react";
+import {Auth} from "aws-amplify";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
-import {listSurveys} from "../../graphql/queries";
-import {deleteSurvey} from "../../graphql/mutations";
-import {onCreateOrDeleteSurvey} from "../../graphql/customSubscriptions";
 import QuizRow from "../../components/QuizRow/index";
-import {initSurveys} from "../../actions/surveys";
+import {getSurveys} from "../../actions/surveys";
 import "./index.css";
 
 class Surveys extends Component {
-  surveyDeleteMutation = null;
-
   constructor(props) {
     super(props);
 
     // this.subscription = undefined;
+    this.state = {
+      surveys: []
+    }
   }
 
-  handleDeleteQuiz = quizId => {
-    this.surveyDeleteMutation({input: {id: quizId}});
+  async componentDidMount() {
+    const user = await Auth.currentAuthenticatedUser();
+    const surveys = await this.props.getSurveys(user.username);
+    this.setState({surveys});
+  }
+
+  handleDeleteQuiz = surveyId => {
+    // this.surveyDeleteMutation({input: {id: quizId}});
   };
 
-  handleSubscriptions = (prev, newData) => {
-    if (newData.onCreateSurvey) {
-      const surveys = [...prev.listSurveys.items];
-      console.log(`survey "${newData.onCreateSurvey.title}" created`);
-      prev.listSurveys.items = [newData.onCreateSurvey, ...surveys];
-    }
-
-    if (newData.onDeleteSurvey) {
-      console.log(`survey "${newData.onDeleteSurvey.title}" deleted`);
-      prev.listSurveys.items = prev.listSurveys.items.filter(item => item.id !== newData.onDeleteSurvey.id);
-    }
-
-    return prev;
-  };
-
-  // FIXME
-  // componentWillUnmount() {
-  //   this.subscription.unsubscribe();
-  // }
+  // handleSubscriptions = (prev, newData) => {
+  //   if (newData.onCreateSurvey) {
+  //     const surveys = [...prev.listSurveys.items];
+  //     console.log(`survey "${newData.onCreateSurvey.title}" created`);
+  //     prev.listSurveys.items = [newData.onCreateSurvey, ...surveys];
+  //   }
+  //
+  //   if (newData.onDeleteSurvey) {
+  //     console.log(`survey "${newData.onDeleteSurvey.title}" deleted`);
+  //     prev.listSurveys.items = prev.listSurveys.items.filter(item => item.id !== newData.onDeleteSurvey.id);
+  //   }
+  //
+  //   return prev;
+  // };
 
   render() {
-    const ListView = ({quizzes}) => (
-      <div>
-        {quizzes.map(obj =>
-          <QuizRow
-            title={obj.title}
-            status={obj.status}
-            questionsNum={obj.questionsNum}
-            expectedNum={obj.expectedNum}
-            votesNum={obj.votesNum}
-            pin={obj.pin}
-            id={obj.id}
-            key={obj.id}
-            deleteHandler={this.handleDeleteQuiz}
-          />
-        )}
-      </div>
-    );
+    const {surveys} = this.state;
+
+    console.log(surveys);
 
     return (
       <div className="container">
@@ -69,37 +53,28 @@ class Surveys extends Component {
             <button className="btn btn-success">Add new Survey</button>
           </Link>
         </div>
-        <Connect
-          query={graphqlOperation(listSurveys)}
-          mutation={graphqlOperation(deleteSurvey)}
-          subscription={graphqlOperation(onCreateOrDeleteSurvey)}
-          onSubscriptionMsg={this.handleSubscriptions}>
-          {({data, loading, error, mutation}) => {
-            this.surveyDeleteMutation = mutation;
-
-            if (typeof data == "undefined" || typeof data.listSurveys == "undefined") {
-              data = {listSurveys: []};
-            }
-
-            const {listSurveys} = data;
-            const surveys = listSurveys.items && listSurveys.items.length ? listSurveys.items : [];
-
-            console.log(surveys);
-
-            this.props.initSurveys(surveys);
-
-            if (error) return <h3>Error</h3>;
-            if (loading) return <h3>Loading...</h3>;
-            return (<ListView quizzes={surveys}/>);
-          }}
-        </Connect>
+        <div>
+          {/*{surveys.map(obj =>*/}
+          {/*  <QuizRow*/}
+          {/*    title={obj.title}*/}
+          {/*    status={obj.status}*/}
+          {/*    questionsNum={obj.questionsNum}*/}
+          {/*    expectedNum={obj.expectedNum}*/}
+          {/*    votesNum={obj.votesNum}*/}
+          {/*    pin={obj.pin}*/}
+          {/*    id={obj.id}*/}
+          {/*    key={obj.id}*/}
+          {/*    deleteHandler={this.handleDeleteQuiz}*/}
+          {/*  />*/}
+          {/*)}*/}
+        </div>
       </div>
     );
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  initSurveys: (surveys) => dispatch(initSurveys(surveys)),
+  getSurveys: (ownerId) => dispatch(getSurveys(ownerId)),
 });
 
 export default connect(

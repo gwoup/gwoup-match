@@ -5,7 +5,7 @@ const defaultState = {collection: [], matchingSurvey: null};
 const reducer = (state = defaultState, action) => {
   switch (action.type) {
 
-    case Types.INIT_SURVEYS:
+    case Types.GET_SURVEYS_BY_OWNER:
       return {...state, collection: [...action.payload]};
 
     case Types.GET_SURVEY_BY_PIN:

@@ -9,136 +9,48 @@ import {
 } from "react-bootstrap";
 import {v4 as uuidv4} from "uuid";
 import QuestionLinearScale from '../QuestionLinearScale/index';
+import QuestionLinearScaleReply from '../QuestionLinearScaleReply/index';
 import QuestionDateTime from '../QuestionDateTime/index';
+import QuestionDateTimeReply from '../QuestionDateTimeReply/index';
 
 import './index.css';
 
-const QUESTION_TYPES = [
-  {label: 'Linear scale', type: QuestionLinearScale.questionType},
-  {label: 'Date grid', type: QuestionDateTime.questionType},
-];
-
-
 class QuestionContainer extends Component {
-  constructor(props) {
-    super(props);
 
-    const {id, title, questionType} = this.props.question;
-    this.state = {
-      id,
-      title,
-      questionType
-    }
-  }
-
-  static getNewQuestion() {
-    let newQuestion = {...QuestionLinearScale.defaultVal};
-    newQuestion.id = uuidv4();
-
-    return newQuestion;
-  }
-
-  getQuestionByType = (questionType=QuestionLinearScale.questionType, question) => {
+  getQuestionByType = (questionType, question) => {
     if (questionType === QuestionLinearScale.questionType) {
       return (
-        <QuestionLinearScale
+        <QuestionLinearScaleReply
           question={question}
-          updateQuestion={this.handleUpdateQuestion}
+          handleAnswer={this.props.handleAnswer}
         />
       )
-    } else if (questionType === QuestionDateTime.questionType) {
+    }
+
+    if (questionType === QuestionDateTime.questionType) {
       return (
-        <QuestionDateTime
+        <QuestionDateTimeReply
           question={question}
-          updateQuestion={this.handleUpdateQuestion}
+          handleAnswer={this.props.handleAnswer}
         />
       )
-    } else {
-      return null;
-    }
-  };
-
-  handleQuestionTypeChange = event => {
-    let question = {};
-    const questionType = event.target.value;
-
-    if (questionType === QuestionLinearScale.questionType) {
-      question = QuestionLinearScale.defaultVal;
-    } else if (questionType === QuestionDateTime.questionType) {
-      question = QuestionDateTime.defaultVal;
     }
 
-    this.setState({questionType}, () => {
-      this.handleUpdateQuestion(question);
-    });
-  };
-
-  handleChange = event => {
-    this.setState({
-      [event.target.id]: event.target.value
-    }, () => {
-
-      this.handleUpdateQuestion({});
-    });
-  };
-
-  handleUpdateQuestion = (question) => {
-    const updatedQuestion = {
-      ...question,
-      id: this.state.id,
-      title: this.state.title,
-      questionType: this.state.questionType
-    };
-
-    this.props.updateQuestion(updatedQuestion);
+    return null;
   };
 
   render() {
-    const {questionNumber, deleteQuestion, question} = this.props;
-    const {id, title, questionType} = this.state;
-
-    const questionTypes = QUESTION_TYPES.map((item, i) => {
-      return <option value={item.type} key={i}>{item.label}</option>;
-    });
+    const {questionNumber, question} = this.props;
 
     return (
       <Grid>
         <Row className="questionHeader">
-          <Col>
+          <Col className="text-left">
             <b>Question {questionNumber}</b>
-            <button
-              className="btn btn-default btn-xs deleteQuestion"
-              onClick={(e) => deleteQuestion(e, id)}>
-              delete
-            </button>
+            <p>{question.title}</p>
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <FormGroup controlId="title">
-              <FormControl
-                type="text"
-                placeholder="Untitled question"
-                value={title}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <FormGroup controlId="questionType">
-              <FormControl
-                componentClass="select"
-                onChange={this.handleQuestionTypeChange}
-                value={questionType}
-              >
-                {questionTypes}
-              </FormControl>
-            </FormGroup>
-          </Col>
-        </Row>
-        {this.getQuestionByType(questionType, question)}
+        {this.getQuestionByType(question.questionType, question)}
       </Grid>
     );
   }
@@ -147,8 +59,7 @@ class QuestionContainer extends Component {
 QuestionContainer.propTypes = {
   questionNumber: PropTypes.number.isRequired,
   question: PropTypes.object.isRequired,
-  updateQuestion: PropTypes.func.isRequired,
-  deleteQuestion: PropTypes.func.isRequired,
+  handleAnswer: PropTypes.func.isRequired,
 };
 
 export default QuestionContainer;

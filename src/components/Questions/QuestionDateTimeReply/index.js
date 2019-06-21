@@ -3,10 +3,6 @@ import PropTypes from "prop-types";
 import {Col, Row, Label, Checkbox} from "react-bootstrap";
 import './index.css';
 
-const FIELD_RULES = {
-  'minValue': '^[0-9]*$',
-  'maxValue': '^[0-9]*$',
-};
 
 const QUESTION_DATE_STRUCTURE = [
   {
@@ -54,7 +50,6 @@ const QUESTION_TIME_STRUCTURE = [
   }
 ];
 
-const cellSize = index => index < 5 ? 2 : 1;
 const buildQuestionArray = () => {
   const result = new Array(7);
   for (let i = 0; i < result.length; i++) {
@@ -68,14 +63,14 @@ const cloneDataArr = arr => {
   return arr.map(arr => arr.slice());
 };
 
-export default class QuestionDateTime extends Component {
+export default class QuestionDateTimeReply extends Component {
 
   constructor(props) {
     super(props);
-    const {id, dateValue, questionType} = this.props.question;
+    const {id, questionType} = this.props.question;
     this.state = {
       id,
-      dateValue: dateValue || QuestionDateTime.defaultVal.dateValue,
+      dateValue: buildQuestionArray(),
       questionType
     };
   }
@@ -109,25 +104,15 @@ export default class QuestionDateTime extends Component {
     }
 
     this.setState({dateValue: updatedDateValue}, () => {
-      this.props.updateQuestion({
-        id: this.state.id,
-        // on questions builder we don't need values for such type of question
-        // dateValue: this.state.dateValue,
-        dateValue: buildQuestionArray(),
-        questionType: QuestionDateTime.questionType
+      this.props.handleAnswer({
+        questionId: this.state.id,
+        value: JSON.stringify(this.state.dateValue)
       });
     });
   };
 
   static get questionType() {
-    return "QuestionDateTime";
-  }
-
-  static get defaultVal() {
-    return {
-      dateValue: buildQuestionArray(),
-      questionType: QuestionDateTime.questionType
-    };
+    return "QuestionDateTimeReply";
   }
 
   static validator(value) {
@@ -135,36 +120,39 @@ export default class QuestionDateTime extends Component {
 
   render() {
     return (
-      <>
-        <Row>
-          {QUESTION_DATE_STRUCTURE.map((dateItem, i) =>
-            <Col
-              xs={cellSize(i)} md={cellSize(i)} lg={cellSize(i)}
-              key={dateItem.id} className="questionCellHeader text-center"
-            >
-              {dateItem.title}
-            </Col>
-          )}
-        </Row>
-        {QUESTION_TIME_STRUCTURE.map(timeItem =>
-          <Row key={timeItem.id}>
-            {QUESTION_DATE_STRUCTURE.map((dateItem, i) =>
-              <Col xs={cellSize(i)} md={cellSize(i)} lg={cellSize(i)} key={dateItem.id} className="questionCellData">
-                <div className="cellLabel">{timeItem.description}</div>
-                <Checkbox
-                  onChange={(e) => this.handleChange(e, dateItem.id, timeItem.id)}
-                  checked={this.isCellChecked(dateItem.id, timeItem.id)}
-                />
-              </Col>
-            )}
-          </Row>
-        )}
-      </>
+      <Row>
+        <Col>
+          <table width="100%">
+            <tbody>
+              <tr>
+                {QUESTION_DATE_STRUCTURE.map((dateItem, i) =>
+                  <td width="14%" key={dateItem.id} className="questionCellHeader text-center">
+                    {dateItem.title}
+                  </td>
+                )}
+              </tr>
+              {QUESTION_TIME_STRUCTURE.map(timeItem =>
+                <tr key={timeItem.id}>
+                  {QUESTION_DATE_STRUCTURE.map((dateItem, i) =>
+                    <td width="14%" key={dateItem.id} className="questionCellData">
+                      <div className="cellLabel">{timeItem.description}</div>
+                      <Checkbox
+                        onChange={(e) => this.handleChange(e, dateItem.id, timeItem.id)}
+                        checked={this.isCellChecked(dateItem.id, timeItem.id)}
+                      />
+                    </td>
+                  )}
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </Col>
+      </Row>
     );
   }
 }
 
-QuestionDateTime.propTypes = {
+QuestionDateTimeReply.propTypes = {
   question: PropTypes.object.isRequired,
-  updateQuestion: PropTypes.func.isRequired
+  handleAnswer: PropTypes.func.isRequired
 };

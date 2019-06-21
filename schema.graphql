@@ -4,60 +4,69 @@
 type Survey @model( queries: { get: "fetchSurvey", list: "listSurveys", } )
 @key(name: "ByPin", fields: ["pin"], queryField: "getSurveyByPin")
 @auth(rules: [
-  { allow: owner },
-  { allow: owner, ownerField: "editors", operations: [update, read] },
-  { allow: groups, groups: "everyone", queries:[get]}
-  { allow: groups, groups: ["Admin"] }
+    { allow: owner },
+    { allow: owner, ownerField: "editors", operations: [update, read] },
+    { allow: groups, groups: "everyone", queries:[get]}
+    { allow: groups, groups: ["Admin"] }
 ])
 {
-  id: ID!
-  title: String!
-  description: String
-  questions: [Question!]!
-  minGroupSize: Int!
-  maxGroupSize: Int!
-  preferredGroupSize: Int!
-  status: SurveyStatus!
-  editors: [String!]! @auth(rules: [{ allow: owner }])
-  pin: String!
-  responses: [SurveyResponse!]! @auth(rules: [{ allow: owner }])
-  groups: [Group!]! @connection(name: "SurveyGroups", sortField: "name")
+    id: ID!
+    title: String!
+    description: String
+    questions: [Question!]!
+    minGroupSize: Int!
+    maxGroupSize: Int!
+    preferredGroupSize: Int!
+    status: SurveyStatus!
+    editors: [String!]! @auth(rules: [{ allow: owner }])
+    pin: String!
+    responses: [SurveyResponse!]! @auth(rules: [{ allow: owner }])
+    groups: [Group!]! @connection(name: "SurveyGroups", sortField: "name")
 }
 
 enum SurveyStatus {
-  DRAFT
-  PUBLISHED
-  VOTED
-  CLOSED
+    DRAFT
+    PUBLISHED
+    VOTED
+    CLOSED
 }
 
 enum QuestionsType {
-  QuestionLinearScale
-  QuestionDateTime
+    QuestionLinearScale
+    QuestionDateTime
 }
 
 type Question {
-  questionId: String!
-  type: QuestionsType
-  title: String!
-  description: String
-  jsonStructure: String!
+    questionId: String!
+    type: QuestionsType
+    title: String!
+    description: String
+    jsonStructure: String!
 }
 
 type Group @model ( subscriptions: null )
 {
-  id: ID!
-  name: String
-  members: [String!]!
-  survey: Survey @connection(name: "SurveyGroups")
+    id: ID!
+    name: String
+    members: [String!]!
+    survey: Survey @connection(name: "SurveyGroups")
+}
+
+type SurveyResponse @model(queries:)
+@key(name: "BySurveyId", fields: ["surveyId"], queryField: "getResponseBySurveyId")
+@auth(rules: [
+    { allow: owner, ownerField: "owner", operations: [create, read] }
+    { allow: owner, ownerField: "editors", operations: [read, list] }
+    { allow: groups, groups: ["Admin"] }
+])
+{
+    surveyId: String!
+    answers:[Response!]!
+    owner: String!
+    editors: [String!]!
 }
 
 type Response {
-  questionId: String!
-  jsonResponse: String!
-}
-
-type SurveyResponse {
-  respondent: String!
-  response:[Response!]!
+    questionId: String!
+    jsonStructure: String!
 }

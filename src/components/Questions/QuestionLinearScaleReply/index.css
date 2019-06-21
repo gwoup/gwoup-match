@@ -1,0 +1,26 @@
+.labelContainer .minLabel {
+    display: block;
+    float: left;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.labelContainer .maxLabel {
+    display: block;
+    float: right;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.valueLabel {
+    display: block;
+    float: left;
+    padding-left: 50px;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.labelContainer {
+    margin-bottom: 25px;
+    height: 10px;
+}

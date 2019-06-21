@@ -13,7 +13,7 @@ import {
 import {connect} from "react-redux";
 
 import LoaderButton from "../../components/LoaderButton";
-import QuestionContainer from "../../components/Questions/QuestionContainer";
+import QuestionBuilderContainer from "../../components/Questions/QuestionBuilderContainer";
 import {saveSurvey, getSurveyById} from "../../actions/surveys";
 import {serializeQuestionsArr, deserializeQuestionsArr} from "../../utils/survey";
 
@@ -112,7 +112,6 @@ class QuizForm extends Component {
       questions: serializeQuestionsArr(questions),
       status,
       responses: [],
-      editors: ["alex.com.ua@gmail.com"],
       pin: isCreateOperation ? this.getRandomKey(6) : pin
     };
 
@@ -152,7 +151,7 @@ class QuizForm extends Component {
     event.preventDefault();
     const {questions} = this.state;
 
-    this.setState({questions: [...questions, QuestionContainer.getNewQuestion()]}, () => {
+    this.setState({questions: [...questions, QuestionBuilderContainer.getNewQuestion()]}, () => {
       console.log(this.state.questions);
     });
   };
@@ -304,7 +303,7 @@ class QuizForm extends Component {
               {questions.map((question, index) =>
                 <Row key={question.id} className="questionFormContainer">
                   <Col>
-                    <QuestionContainer
+                    <QuestionBuilderContainer
                       questionNumber={index + 1}
                       question={question}
                       updateQuestion={this.handleUpdateQuestion}

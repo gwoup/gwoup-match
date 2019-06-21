@@ -2,6 +2,7 @@ import {API, graphqlOperation} from "aws-amplify";
 import {createSurvey, updateSurvey} from "../graphql/mutations";
 import {fetchSurvey} from "../graphql/queries";
 import {getSurveyByPin} from "../graphql/customQueries";
+import {deserializeQuestionsArr} from "../utils/survey";
 
 const Types = {
   INIT_SURVEYS: "INIT_SURVEYS",
@@ -64,6 +65,7 @@ const getPublishedSurveyByPin = (pin) => {
       const result = await API.graphql(graphqlOperation(getSurveyByPin, {pin}));
       const survey = result.data.getSurveyByPin.items.length ? result.data.getSurveyByPin.items[0] : null;
       if (survey && survey.status === SurveyStatuses.PUBLISHED) {
+        survey.questions = deserializeQuestionsArr(survey.questions);
         return onSuccess(survey);
       }
 
@@ -110,11 +112,42 @@ const saveSurvey = (survey) => {
 };
 
 
+const submitAnswer = (surveyId, answers) => {
+  return async dispatch => {
+    const onSuccess = (success) => {
+      dispatch({type: Types.ADD_SURVEY, payload: success});
+      return success;
+    };
+
+    const onError = (error) => {
+      dispatch({type: Types.ADD_SURVEY_FAILURE, error});
+      return error;
+    };
+
+    try {
+      const survey = await API.graphql(graphqlOperation(fetchSurvey, {id: surveyId}));
+      // check - is response available
+      // if not - add response, update
+      // TODO:
+      let response = {
+        respondentId:"",
+        answers
+      }
+      // survey.responses
+      await API.graphql(graphqlOperation(updateSurvey, {input: survey}));
+      return onSuccess(1);
+    } catch (error) {
+      return onError(error);
+    }
+  }
+};
+
 export {
   initSurveys,
   saveSurvey,
   getSurveyById,
   getPublishedSurveyByPin,
+  submitAnswer,
   Types,
   SurveyStatuses
 };

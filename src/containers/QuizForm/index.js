@@ -122,7 +122,7 @@ class QuizForm extends Component {
     console.log('saved survey', survey);
 
     this.props.saveSurvey(survey);
-    this.props.history.push('/quizzes');
+    this.props.history.push('/surveys');
 
     this.setState({isSaving: false});
   };

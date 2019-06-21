@@ -35,28 +35,28 @@
                   {
                       "AttributeName": "ownerId",
                       "AttributeType": "S"
-                  }  , 
-                  
+                  }  ,
+
                   {
                       "AttributeName": "surveyId",
                       "AttributeType": "S"
-                  }  , 
-                  
+                  }  ,
+
                   {
                       "AttributeName": "status",
                       "AttributeType": "S"
-                  }  , 
-                  
+                  }  ,
+
                   {
                       "AttributeName": "pin",
                       "AttributeType": "S"
-                  } 
+                  }
                   
                 ],
                 "KeySchema": [
                   
                   {
-                    "AttributeName": "ownerId",
+                    "AttributeName": "surveyId",
                     "KeyType": "HASH"
                   } 
                   
@@ -90,21 +90,21 @@
                 }
                 
                 ,"GlobalSecondaryIndexes": [
-                  
+
                     {
                         "IndexName": "surveyId",
                         "KeySchema": [
-                            
+
                             {
                                 "AttributeName": "surveyId",
                                 "KeyType": "HASH"
-                            }  , 
-                            
+                            }  ,
+
                             {
                                 "AttributeName": "status",
                                 "KeyType": "RANGE"
-                            } 
-                            
+                            }
+
                         ],
                         "Projection": {
                             "ProjectionType": "ALL"
@@ -113,17 +113,17 @@
                             "ReadCapacityUnits": "5",
                             "WriteCapacityUnits": "5"
                         }
-                    }  , 
-                  
+                    }  ,
+
                     {
                         "IndexName": "pin",
                         "KeySchema": [
-                            
+
                             {
                                 "AttributeName": "pin",
                                 "KeyType": "HASH"
-                            } 
-                            
+                            }
+
                         ],
                         "Projection": {
                             "ProjectionType": "ALL"
@@ -132,10 +132,10 @@
                             "ReadCapacityUnits": "5",
                             "WriteCapacityUnits": "5"
                         }
-                    } 
-                  
+                    }
+
                 ]
-                
+
             }
         }
     },

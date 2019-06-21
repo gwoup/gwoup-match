@@ -54,19 +54,19 @@ class Surveys extends Component {
           </Link>
         </div>
         <div>
-          {/*{surveys.map(obj =>*/}
-          {/*  <QuizRow*/}
-          {/*    title={obj.title}*/}
-          {/*    status={obj.status}*/}
-          {/*    questionsNum={obj.questionsNum}*/}
-          {/*    expectedNum={obj.expectedNum}*/}
-          {/*    votesNum={obj.votesNum}*/}
-          {/*    pin={obj.pin}*/}
-          {/*    id={obj.id}*/}
-          {/*    key={obj.id}*/}
-          {/*    deleteHandler={this.handleDeleteQuiz}*/}
-          {/*  />*/}
-          {/*)}*/}
+          {surveys.map(obj =>
+            <QuizRow
+              title={obj.title}
+              status={obj.status}
+              questionsNum={obj.questionsNum}
+              expectedNum={obj.expectedNum}
+              votesNum={obj.votesNum}
+              pin={obj.pin}
+              id={obj.id}
+              key={obj.id}
+              deleteHandler={this.handleDeleteQuiz}
+            />
+          )}
         </div>
       </div>
     );

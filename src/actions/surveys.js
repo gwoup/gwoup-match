@@ -22,7 +22,7 @@ const SurveyStatuses = {
   CLOSED: "CLOSED"
 };
 
-const getSurveys = ownerId =>{
+const getSurveys = ownerId => {
   return async dispatch => {
     const onSuccess = (success) => {
       dispatch({type: Types.GET_SURVEYS_BY_OWNER, payload: success});
@@ -37,7 +37,7 @@ const getSurveys = ownerId =>{
     try {
       const result = await API.get('survey', '/surveys', {
         queryStringParameters: {
-          ownerId:ownerId
+          ownerId
         }
       });
       return onSuccess(result.data);
@@ -111,21 +111,17 @@ const saveSurvey = (survey) => {
     };
 
     try {
-      let graphQlOp, graphQlFieldOp;
+      console.log(survey);
+      let data;
 
       if (survey.id === null || typeof survey.id === "undefined") {
-        graphQlOp = createSurvey;
-        graphQlFieldOp = "createSurvey";
+        data = await API.post('survey', '/surveys', {body: survey});
       } else {
-        graphQlOp = updateSurvey;
-        graphQlFieldOp = "updateSurvey";
+        data = await API.put('survey', '/surveys', {body: survey});
       }
 
-      console.log(survey);
-      console.log(graphQlFieldOp);
-
-      const result = await API.graphql(graphqlOperation(graphQlOp, {input: survey}));
-      return onSuccess(result.data[graphQlFieldOp]);
+      console.log(data);
+      return onSuccess(data);
     } catch (error) {
       return onError(error);
     }
@@ -151,7 +147,7 @@ const submitAnswer = (surveyId, answers) => {
       // if not - add response, update
       // TODO:
       let response = {
-        respondentId:"",
+        respondentId: "",
         answers
       }
       // survey.responses

@@ -14,10 +14,11 @@ var region = process.env.REGION
 var authGwoupa00fb6f3UserPoolId = process.env.AUTH_GWOUPA00FB6F3_USERPOOLID
 
 Amplify Params - DO NOT EDIT */
-const AWS = require('aws-sdk')
-var express = require('express')
-var bodyParser = require('body-parser')
-var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
+const AWS = require('aws-sdk');
+var express = require('express');
+var bodyParser = require('body-parser');
+var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
+const uuidv4 = require('uuid/v4');
 
 
 AWS.config.update({region: process.env.TABLE_REGION});
@@ -29,8 +30,8 @@ if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + '-' + process.env.ENV;
 }
 
-const userIdPresent = true;
-const partitionKeyName = "ownerId";
+const userIdPresent = false;//true;
+const partitionKeyName = "surveyId";
 const partitionKeyType = "S";
 const sortKeyName = "";
 const sortKeyType = "";
@@ -47,28 +48,34 @@ app.use(awsServerlessExpressMiddleware.eventContext())
 
 // Enable CORS for all methods
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*")
-  res.header("Access-Control-Allow-Credentials", "true")
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next()
 });
+
+const getUserId = (authProvider) => {
+  const parts = authProvider.split(':');
+  return parts[parts.length - 1];
+};
 
 
 app.get('/surveys', function (req, res) {
   var condition = {};
+  // req.apiGateway.event.requestContext.identity.cognitoIdentityId
+  const userId = getUserId(req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider);
 
   condition[partitionKeyName] = {
-    ComparisonOperator: 'EQ'
+    ComparisonOperator: 'EQ',
+    AttributeValueList: [userId]
   };
 
-  condition[partitionKeyName]['AttributeValueList'] = [req.apiGateway.event.requestContext.identity.cognitoIdentityId];
-
-  let queryParams = {
+  let params = {
     TableName: tableName,
     KeyConditions: condition
   };
 
-  dynamodb.query(queryParams, (err, data) => {
+  dynamodb.query(params, (err, data) => {
     if (err) {
       res.statusCode = 500;
       res.json({error: 'Could not load items: ' + err});
@@ -78,32 +85,82 @@ app.get('/surveys', function (req, res) {
   });
 });
 
+// Get by Id
 app.get('/surveys/*', function (req, res) {
   res.json({success: 'get call succeed!', url: req.url});
 });
 
+// create
 app.post('/surveys', function (req, res) {
-  // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
+  const userId = getUserId(req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider);
+  const {title, minGroupSize, maxGroupSize, preferredGroupSize, pin} = req.body;
+
+  let params = {
+    TableName: tableName,
+    Item: {
+      title,
+      minGroupSize,
+      maxGroupSize,
+      preferredGroupSize,
+      pin,
+      responses: [],
+      questions: [],
+      status: 'DRAFT',
+      ownerId: userId,
+      surveyId: uuidv4()
+    }
+  };
+
+  dynamodb.put(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not load items: ' + err});
+    } else {
+      res.json({data});
+    }
+  });
 });
 
-app.post('/surveys/*', function (req, res) {
-  // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
-});
-
+// update
 app.put('/surveys', function (req, res) {
-  // Add your code here
   res.json({success: 'put call succeed!', url: req.url, body: req.body})
 });
 
-app.put('/surveys/*', function (req, res) {
-  // Add your code here
+// add answers
+app.put('/surveys/answers', function (req, res) {
   res.json({success: 'put call succeed!', url: req.url, body: req.body})
 });
 
-app.delete('/surveys', function (req, res) {
-  res.json({success: 'delete call succeed!', url: req.url});
+
+// delete by Id
+app.delete('/survey', function (req, res) {
+  var condition = {};
+  const userId = getUserId(req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider);
+
+  condition[partitionKeyName] = {
+    ComparisonOperator: 'EQ',
+    AttributeValueList: [userId]
+  };
+
+  condition['surveyId'] = {
+    ComparisonOperator: 'EQ',
+    AttributeValueList: [{"S": req.query.surveyId}]
+  };
+
+  let params = {
+    TableName: tableName,
+    KeyConditions: condition
+  };
+
+  // dynamodb.delete(params, (err, data) => {
+  //   if (err) {
+  //     res.statusCode = 500;
+  //     res.json({error: 'Could not load items: ' + err});
+  //   } else {
+  //     res.json({data: data.Items});
+  //   }
+  // });
+  res.json({data: []});
 });
 
 app.listen(3000, function () {

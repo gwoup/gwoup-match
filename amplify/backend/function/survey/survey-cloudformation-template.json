@@ -8,6 +8,14 @@
 		"authgwoupa00fb6f3UserPoolId": {
 			"Type": "String",
 			"Default": "authgwoupa00fb6f3UserPoolId"
+		},
+		"storagesurveyName": {
+			"Type": "String",
+			"Default": "storagesurveyName"
+		},
+		"storagesurveyArn": {
+			"Type": "String",
+			"Default": "storagesurveyArn"
 		}
 	},
 	"Conditions": {
@@ -70,7 +78,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "gwoup-dev-20190621152151-deployment",
-					"S3Key": "amplify-builds/survey-1561126851-latest-build.zip"
+					"S3Key": "amplify-builds/survey-1561134703-latest-build.zip"
 				}
 			}
 		},
@@ -151,6 +159,22 @@
 									}
 								]
 							}
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"dynamodb:GetItem",
+								"dynamodb:Query",
+								"dynamodb:Scan",
+								"dynamodb:PutItem",
+								"dynamodb:UpdateItem",
+								"dynamodb:DeleteItem"
+							],
+							"Resource": [
+								{
+									"Ref": "storagesurveyArn"
+								}
+							]
 						}
 					]
 				}

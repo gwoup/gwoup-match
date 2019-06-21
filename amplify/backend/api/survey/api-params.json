@@ -1,0 +1,41 @@
+{
+    "paths": [
+        {
+            "name": "/surveys",
+            "lambdaFunction": "survey",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/POST",
+                    "/GET",
+                    "/PUT",
+                    "/PATCH",
+                    "/DELETE"
+                ]
+            }
+        }
+    ],
+    "resourceName": "survey",
+    "apiName": "survey",
+    "functionArns": [
+        {
+            "lambdaFunction": "survey"
+        }
+    ],
+    "privacy": {
+        "auth": 1,
+        "unauth": 0,
+        "authRoleName": "gwoup-dev-20190621152151-authRole",
+        "unAuthRoleName": "gwoup-dev-20190621152151-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "survey",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}

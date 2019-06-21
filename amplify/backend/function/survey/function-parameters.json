@@ -1,0 +1,12 @@
+{
+    "permissions": {
+        "auth": {
+            "gwoupa00fb6f3": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ]
+        }
+    }
+}

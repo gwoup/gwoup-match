@@ -1,17 +1,16 @@
 import React, {Component} from "react";
-import "./Quizzes.css";
 import {graphqlOperation} from "aws-amplify";
 import {Connect} from "aws-amplify-react";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
-import {listSurveys} from "../graphql/queries";
-import {deleteSurvey} from "../graphql/mutations";
-import {onCreateOrDeleteSurvey} from "../graphql/customSubscriptions";
-import QuizRow from "../components/QuizRow/index";
-import {initSurveys} from "../actions/surveys";
+import {listSurveys} from "../../graphql/queries";
+import {deleteSurvey} from "../../graphql/mutations";
+import {onCreateOrDeleteSurvey} from "../../graphql/customSubscriptions";
+import QuizRow from "../../components/QuizRow/index";
+import {initSurveys} from "../../actions/surveys";
+import "./index.css";
 
-
-class Quizzes extends Component {
+class Surveys extends Component {
   surveyDeleteMutation = null;
 
   constructor(props) {
@@ -106,4 +105,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   null,
   mapDispatchToProps,
-)(Quizzes);
+)(Surveys);

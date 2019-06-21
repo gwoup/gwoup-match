@@ -1,17 +1,46 @@
 {
 	"auth": {
-		"gwoup380595be": {
+		"gwoupa00fb6f3": {
 			"service": "Cognito",
 			"providerPlugin": "awscloudformation"
 		}
 	},
-	"api": {
-		"gwoup": {
-			"service": "AppSync",
+	"function": {
+		"survey": {
+			"service": "Lambda",
 			"providerPlugin": "awscloudformation",
-			"output": {
-				"securityType": "AMAZON_COGNITO_USER_POOLS"
-			}
+			"build": true,
+			"dependsOn": [
+				{
+					"category": "auth",
+					"resourceName": "gwoupa00fb6f3",
+					"attributes": [
+						"UserPoolId"
+					]
+				}
+			]
+		}
+	},
+	"api": {
+		"survey": {
+			"service": "API Gateway",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [
+				{
+					"category": "function",
+					"resourceName": "survey",
+					"attributes": [
+						"Name",
+						"Arn"
+					]
+				}
+			]
+		}
+	},
+	"storage": {
+		"survey": {
+			"service": "DynamoDB",
+			"providerPlugin": "awscloudformation"
 		}
 	}
 }

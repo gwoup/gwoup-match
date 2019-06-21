@@ -4,7 +4,7 @@ import Home from "./containers/Home";
 import NotFound from "./containers/NotFound";
 import Login from "./containers/Login";
 import Match from "./containers/Match";
-import Quizzes from "./containers/Quizzes";
+import Surveys from "./containers/Surveys/index";
 import QuizForm from "./containers/QuizForm";
 import BeMatched from "./containers/BeMatched";
 import BeMatchedBySurvey from "./containers/BeMatchedBySurvey/index";
@@ -21,7 +21,7 @@ export default ({ childProps }) =>
     <UnauthenticatedRoute path="/" exact component={Home} props={childProps} />
     <AuthenticatedRoute path="/quizzes/new" exact component={QuizForm} props={childProps} />
     <AuthenticatedRoute path="/quizzes/:id" component={QuizForm} props={childProps} />
-    <AuthenticatedRoute path="/quizzes" exact component={Quizzes} props={childProps} />
+    <AuthenticatedRoute path="/surveys" exact component={Surveys} props={childProps} />
     <AuthenticatedRoute path="/bematched" exact component={BeMatched} props={childProps} />
     <AuthenticatedRoute path="/bematched/survey" exact component={BeMatchedBySurvey} props={childProps} />
     <AuthenticatedRoute path="/bematched/status" exact component={BeMatchedStatus} props={childProps} />

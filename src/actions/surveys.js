@@ -15,6 +15,7 @@ const Types = {
   RESET_MATCHING_SURVEY: "RESET_MATCHING_SURVEY",
   DELETE_SURVEY: "DELETE_SURVEY",
   DELETE_SURVEY_FAILURE: "DELETE_SURVEY_FAILURE",
+  PUBLISH_SURVEY_FAILURE: "PUBLISH_SURVEY_FAILURE",
 };
 
 const SurveyStatuses = {
@@ -24,7 +25,7 @@ const SurveyStatuses = {
   CLOSED: "CLOSED"
 };
 
-const getSurveys = ownerId => {
+const getSurveys = () => {
   return async dispatch => {
     const onSuccess = (success) => {
       dispatch({type: Types.GET_SURVEYS_BY_OWNER, payload: success});
@@ -37,11 +38,7 @@ const getSurveys = ownerId => {
     };
 
     try {
-      const result = await API.get('survey', '/surveys', {
-        queryStringParameters: {
-          ownerId
-        }
-      });
+      const result = await API.get('survey', '/surveys', {});
       return onSuccess(result.data);
     } catch (error) {
       return onError(error);
@@ -62,8 +59,17 @@ const getSurveyById = surveyId => {
     };
 
     try {
-      const result = await API.graphql(graphqlOperation(fetchSurvey, {id: surveyId}));
-      return onSuccess(result.data.fetchSurvey);
+      const result = await API.get('survey', '/surveys', {
+        queryStringParameters: {
+          surveyId
+        }
+      });
+
+      if (result.data && result.data.length) {
+        return onSuccess(result.data[0]);
+      } else {
+        return onError("Survey was not found");
+      }
     } catch (error) {
       return onError(error);
     }
@@ -112,13 +118,11 @@ const deleteSurvey = (surveyId) => {
     };
 
     try {
-
       const data = await API.del('survey', '/surveys', {
         queryStringParameters: {
           surveyId
         }
       });
-      console.log(data);
       return onSuccess(data);
     } catch (error) {
       return onError(error);
@@ -143,7 +147,7 @@ const saveSurvey = (survey) => {
       console.log(survey);
       let data;
 
-      if (survey.id === null || typeof survey.id === "undefined") {
+      if (survey.surveyId === null || typeof survey.surveyId === "undefined") {
         data = await API.post('survey', '/surveys', {body: survey});
       } else {
         data = await API.put('survey', '/surveys', {body: survey});
@@ -157,6 +161,25 @@ const saveSurvey = (survey) => {
   }
 };
 
+const publishSurvey = (surveyId) => {
+  return async dispatch => {
+    const onError = (error) => {
+      dispatch({type: Types.PUBLISH_SURVEY_FAILURE, error});
+      return error;
+    };
+
+    try {
+      await API.put('survey', '/surveys/publish', {
+        body: {
+          surveyId,
+          publish: true
+        }
+      });
+    } catch (error) {
+      return onError(error);
+    }
+  }
+};
 
 const submitAnswer = (surveyId, answers) => {
   return async dispatch => {
@@ -195,6 +218,7 @@ export {
   getPublishedSurveyByPin,
   submitAnswer,
   deleteSurvey,
+  publishSurvey,
   Types,
   SurveyStatuses
 };

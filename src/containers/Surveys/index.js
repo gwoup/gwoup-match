@@ -27,12 +27,8 @@ class Surveys extends Component {
   }
 
   handleDeleteQuiz = async surveyId => {
-    this.setState({isLoading: true});
-
     await this.props.deleteSurvey(surveyId);
     routeRefresh(this.props.history, "/surveys");
-
-    this.setState({isLoading: false});
   };
 
   render() {
@@ -41,13 +37,13 @@ class Surveys extends Component {
     return (
       <div className="container">
         <div className="row text-left">
-          <Link to="/quizzes/new">
+          <Link to="/surveys/new">
             <button className="btn btn-success">Add new Survey</button>
           </Link>
         </div>
         <div>
           {isLoading && <h3>Loading...</h3>}
-          {!isLoading && surveys.map(obj =>
+          {surveys.map(obj =>
             <QuizRow
               title={obj.title}
               status={obj.status}
@@ -55,7 +51,7 @@ class Surveys extends Component {
               expectedNum={obj.expectedNum}
               votesNum={obj.votesNum}
               pin={obj.pin}
-              id={obj.surveyId}
+              surveyId={obj.surveyId}
               key={obj.surveyId}
               deleteHandler={this.handleDeleteQuiz}
             />
@@ -67,7 +63,7 @@ class Surveys extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  getSurveys: (ownerId) => dispatch(getSurveys(ownerId)),
+  getSurveys: () => dispatch(getSurveys()),
   deleteSurvey: (surveyId) => dispatch(deleteSurvey(surveyId)),
 });
 

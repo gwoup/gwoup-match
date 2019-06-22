@@ -19,11 +19,11 @@ const AWS = require('aws-sdk');
 var express = require('express');
 var bodyParser = require('body-parser');
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
+// var utils = require('./utils');
 const uuidv4 = require('uuid/v4');
 
 
-AWS.config.update({region: process.env.TABLE_REGION});
-
+AWS.config.update({region: process.env.TABLE_REGION || "us-west-2"});
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 let tableName = "survey";
@@ -50,13 +50,31 @@ app.use(awsServerlessExpressMiddleware.eventContext())
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization, x-amz-date, x-amz-security-token");
   next()
 });
 
-const getUserId = (authProvider) => {
-  const parts = authProvider.split(':');
-  return parts[parts.length - 1];
+const CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
+
+const getRandomKey = (length) => {
+  let result = [];
+
+  const charactersLength = CHARSET.length;
+  for (let i = 0; i < length; i++) {
+    result.push(CHARSET.charAt(Math.floor(Math.random() * charactersLength)));
+  }
+
+  return result.join('');
+};
+
+const getUserId = (req) => {
+  if (userIdPresent) {
+    const authProvider = req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider;
+    const parts = authProvider.split(':');
+    return parts[parts.length - 1];
+  }
+
+  return demoUserId || "";
 };
 
 // convert url string param to expected Type
@@ -70,8 +88,7 @@ const convertUrlType = (param, type) => {
 }
 
 app.get('/surveys', function (req, res) {
-  // req.apiGateway.event.requestContext.identity.cognitoIdentityId
-  const currentUserId = getUserId(req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider);
+  const currentUserId = getUserId(req);
 
   let params = {
     TableName: tableName,
@@ -93,14 +110,32 @@ app.get('/surveys', function (req, res) {
 });
 
 // Get by Id
-app.get('/surveys/*', function (req, res) {
-  res.json({success: 'get call succeed!', url: req.url});
+app.get('/surveys/:surveyId', function (req, res) {
+  const currentUserId = getUserId(req);
+  const {surveyId} = req.params;
+
+  let params = {
+    TableName: tableName,
+    Key: {
+      surveyId,
+      ownerId: currentUserId,
+    }
+  };
+
+  dynamodb.get(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not find item: ' + err});
+    } else {
+      res.json({data});
+    }
+  });
 });
 
 // create
 app.post('/surveys', function (req, res) {
-  const userId = getUserId(req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider);
-  const {title, minGroupSize, maxGroupSize, preferredGroupSize, pin} = req.body;
+  const userId = getUserId(req);
+  const {title, questions, minGroupSize, maxGroupSize, preferredGroupSize} = req.body;
 
   let params = {
     TableName: tableName,
@@ -109,9 +144,9 @@ app.post('/surveys', function (req, res) {
       minGroupSize,
       maxGroupSize,
       preferredGroupSize,
-      pin,
+      pin: getRandomKey(6),
       responses: [],
-      questions: [],
+      questions,
       status: 'DRAFT',
       ownerId: userId,
       surveyId: uuidv4()
@@ -121,7 +156,7 @@ app.post('/surveys', function (req, res) {
   dynamodb.put(params, (err, data) => {
     if (err) {
       res.statusCode = 500;
-      res.json({error: 'Could not load items: ' + err});
+      res.json({error: 'Could not create item: ' + err});
     } else {
       res.json({data});
     }
@@ -130,7 +165,65 @@ app.post('/surveys', function (req, res) {
 
 // update
 app.put('/surveys', function (req, res) {
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
+  const currentUserId = getUserId(req);
+  const {title, surveyId, minGroupSize, maxGroupSize, preferredGroupSize, questions} = req.body;
+
+  let params = {
+    TableName: tableName,
+    Key: {
+      ownerId: currentUserId,
+      surveyId
+    },
+    UpdateExpression: "set title = :title, responses = :responses, minGroupSize = :minGroupSize, maxGroupSize = :maxGroupSize, preferredGroupSize = :preferredGroupSize, questions = :questions",
+    ExpressionAttributeValues: {
+      ":title": title,
+      ":minGroupSize": minGroupSize,
+      ":maxGroupSize": maxGroupSize,
+      ":preferredGroupSize": preferredGroupSize,
+      ":questions": questions,
+      ":responses": []
+    }
+  };
+
+  dynamodb.update(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not update item: ' + err});
+    } else {
+      res.json({data});
+    }
+  });
+});
+
+// publish
+app.put('/surveys/publish', function (req, res) {
+  const currentUserId = getUserId(req);
+  const {surveyId, publish} = req.body;
+  const status = publish ? 'PUBLISHED' : 'DRAFT';
+
+  let params = {
+    TableName: tableName,
+    Key: {
+      ownerId: currentUserId,
+      surveyId
+    },
+    UpdateExpression: "set #survey_status = :status",
+    ExpressionAttributeNames: {
+      "#survey_status": "status"
+    },
+    ExpressionAttributeValues: {
+      ":status": status,
+    }
+  };
+
+  dynamodb.update(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not publish item: ' + err});
+    } else {
+      res.json({data});
+    }
+  });
 });
 
 // add answers
@@ -141,7 +234,7 @@ app.put('/surveys/answers', function (req, res) {
 
 // delete by Id
 app.delete('/surveys', function (req, res) {
-  const userId = getUserId(req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider);
+  const userId = getUserId(req);
   const {surveyId} = req.query;
 
   let params = {

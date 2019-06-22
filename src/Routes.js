@@ -19,8 +19,8 @@ import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
 export default ({ childProps }) =>
   <Switch>
     <UnauthenticatedRoute path="/" exact component={Home} props={childProps} />
-    <AuthenticatedRoute path="/quizzes/new" exact component={QuizForm} props={childProps} />
-    <AuthenticatedRoute path="/quizzes/:id" component={QuizForm} props={childProps} />
+    <AuthenticatedRoute path="/surveys/new" exact component={QuizForm} props={childProps} />
+    <AuthenticatedRoute path="/surveys/:surveyId" component={QuizForm} props={childProps} />
     <AuthenticatedRoute path="/surveys" exact component={Surveys} props={childProps} />
     <AuthenticatedRoute path="/bematched" exact component={BeMatched} props={childProps} />
     <AuthenticatedRoute path="/bematched/survey" exact component={BeMatchedBySurvey} props={childProps} />

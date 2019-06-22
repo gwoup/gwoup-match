@@ -7,6 +7,7 @@ import Routes from "./Routes";
 import Amplify, {Auth} from "aws-amplify";
 import awsconfig from "./aws-exports";
 
+// awsconfig.aws_cloud_logic_custom[0].endpoint = "http://localhost:3000";
 Amplify.configure(awsconfig);
 
 // const GRAPHQL_API_REGION = awsconfig.aws_appsync_region;

@@ -14,16 +14,15 @@ import {connect} from "react-redux";
 
 import LoaderButton from "../../components/LoaderButton";
 import QuestionBuilderContainer from "../../components/Questions/QuestionBuilderContainer";
-import {saveSurvey, getSurveyById} from "../../actions/surveys";
+import {saveSurvey, getSurveyById, publishSurvey} from "../../actions/surveys";
 import {serializeQuestionsArr, deserializeQuestionsArr} from "../../utils/survey";
 
 
 import "./styles.css";
 
 const SURVEY_INITIAL_STATE = {
-  id: null,
+  surveyId: null,
   title: "",
-  status: "DRAFT",
   minGroupSize: 1,
   maxGroupSize: 10,
   preferredGroupSize: 7,
@@ -34,33 +33,34 @@ class QuizForm extends Component {
   constructor(props) {
     super(props);
 
-    // FIXME: remove uKey from mutation
-    const {id, title, status, minGroupSize, maxGroupSize, preferredGroupSize, uKey} = this.props.survey;
+    const {surveyId, title, status, minGroupSize, maxGroupSize, preferredGroupSize} = this.props.survey;
 
     this.state = {
-      id,
+      surveyId,
       title,
       status,
       minGroupSize,
       maxGroupSize,
       preferredGroupSize,
-      questions: [],
-      uKey
+      questions: []
     };
   }
 
   async componentDidMount() {
     const {match: {params}} = this.props;
 
-    if (params && params.id) {
-      this.setState({isLoading: true});
+    if (params && params.surveyId) {
+      const surveyId = params.surveyId;
+      this.setState({isLoading: true, surveyId});
 
       try {
-        const survey = await this.props.getSurveyById(params.id);
+        const survey = await this.props.getSurveyById(surveyId);
+        console.log(survey);
+
         const {title, minGroupSize, maxGroupSize, preferredGroupSize, questions} = survey;
 
         this.setState({
-          id: params.id,
+          surveyId,
           title,
           minGroupSize,
           maxGroupSize,
@@ -86,60 +86,43 @@ class QuizForm extends Component {
     );
   }
 
-  handlePublish = () => {
-    this.setState({status: 'PUBLISHED'}, async () => {
-      await this.saveQuiz();
-    });
+  handlePublish = async (surveyId) => {
+    await this.props.publishSurvey(surveyId);
+    this.props.history.push('/surveys');
   };
 
   handleSubmit = async event => {
     event.preventDefault();
-
-    await this.saveQuiz();
+    await this.saveSurvey();
   };
 
-  saveQuiz = async () => {
+  saveSurvey = async () => {
     this.setState({isSaving: true});
-    const {id, title, minGroupSize, maxGroupSize, preferredGroupSize, status, pin, questions} = this.state;
+    const {surveyId, title, minGroupSize, maxGroupSize, preferredGroupSize, questions} = this.state;
 
-    const isCreateOperation = this.isCreateOp(id);
-
+    const isCreateOperation = this.isCreateOp(surveyId);
     const survey = {
       title,
       minGroupSize,
       maxGroupSize,
       preferredGroupSize,
       questions: serializeQuestionsArr(questions),
-      status,
-      responses: [],
-      pin: isCreateOperation ? this.getRandomKey(6) : pin
+      responses: []
     };
 
     if (!isCreateOperation) {
-      survey.id = id;
+      survey.surveyId = surveyId;
     }
 
     console.log('saved survey', survey);
 
-    this.props.saveSurvey(survey);
+    await this.props.saveSurvey(survey);
     this.props.history.push('/surveys');
 
     this.setState({isSaving: false});
   };
 
-  isCreateOp = (id) => {
-    return id === null
-  };
-
-  getRandomKey = (length) => {
-    let result = '';
-    const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  };
+  isCreateOp = id => (id === null || typeof id === "undefined");
 
   handleChange = event => {
     this.setState({
@@ -198,7 +181,7 @@ class QuizForm extends Component {
   };
 
   render() {
-    const {isLoading, isSaving, minGroupSize, maxGroupSize, preferredGroupSize, questions} = this.state;
+    const {isLoading, isSaving, minGroupSize, maxGroupSize, preferredGroupSize, questions, surveyId} = this.state;
     if (isLoading) return <h3>Loading...</h3>;
 
     return (
@@ -322,7 +305,7 @@ class QuizForm extends Component {
                     isLoading={isSaving}
                     text="Publish"
                     loadingText="Publishing…"
-                    onClick={() => this.handlePublish()}
+                    onClick={() => this.handlePublish(surveyId)}
                   />
                 </Col>
                 <Col xs={12} mdOffset={2} md={4}>
@@ -350,8 +333,8 @@ const mapStateToProps = (state, ownProps) => {
   const {match: {params}} = ownProps;
 
   let survey = {...SURVEY_INITIAL_STATE};
-  if (params && params.id && state.surveys) {
-    survey = state.surveys.collection.find(obj => obj.id === params.id);
+  if (params && params.surveyId && state.surveys) {
+    survey = state.surveys.collection.find(obj => obj.surveyId === params.surveyId);
   }
 
   return {survey};
@@ -360,6 +343,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => ({
   saveSurvey: (survey) => dispatch(saveSurvey(survey)),
   getSurveyById: (surveyId) => dispatch(getSurveyById(surveyId)),
+  publishSurvey: (surveyId) => dispatch(publishSurvey(surveyId)),
 });
 
 export default connect(

@@ -13,6 +13,8 @@ const Types = {
   GET_SURVEY_BY_PIN: "GET_SURVEY_BY_PIN",
   GET_SURVEY_FAILURE: "GET_SURVEY_FAILURE",
   RESET_MATCHING_SURVEY: "RESET_MATCHING_SURVEY",
+  DELETE_SURVEY: "DELETE_SURVEY",
+  DELETE_SURVEY_FAILURE: "DELETE_SURVEY_FAILURE",
 };
 
 const SurveyStatuses = {
@@ -97,6 +99,33 @@ const getPublishedSurveyByPin = (pin) => {
   }
 };
 
+const deleteSurvey = (surveyId) => {
+  return async dispatch => {
+    const onSuccess = (success) => {
+      dispatch({type: Types.DELETE_SURVEY, payload: success});
+      return success;
+    };
+
+    const onError = (error) => {
+      dispatch({type: Types.DELETE_SURVEY_FAILURE, error});
+      return error;
+    };
+
+    try {
+
+      const data = await API.del('survey', '/surveys', {
+        queryStringParameters: {
+          surveyId
+        }
+      });
+      console.log(data);
+      return onSuccess(data);
+    } catch (error) {
+      return onError(error);
+    }
+  }
+};
+
 
 const saveSurvey = (survey) => {
   return async dispatch => {
@@ -165,6 +194,7 @@ export {
   getSurveyById,
   getPublishedSurveyByPin,
   submitAnswer,
+  deleteSurvey,
   Types,
   SurveyStatuses
 };

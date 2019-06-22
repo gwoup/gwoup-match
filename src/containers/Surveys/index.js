@@ -3,48 +3,40 @@ import {Auth} from "aws-amplify";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 import QuizRow from "../../components/QuizRow/index";
-import {getSurveys} from "../../actions/surveys";
+import {getSurveys, deleteSurvey} from "../../actions/surveys";
+import {routeRefresh} from "../../utils/routes";
 import "./index.css";
 
 class Surveys extends Component {
   constructor(props) {
     super(props);
 
-    // this.subscription = undefined;
     this.state = {
+      isLoading: false,
       surveys: []
     }
   }
 
   async componentDidMount() {
+    this.setState({isLoading: true});
+
     const user = await Auth.currentAuthenticatedUser();
     const surveys = await this.props.getSurveys(user.username);
-    this.setState({surveys});
+
+    this.setState({surveys, isLoading: false});
   }
 
-  handleDeleteQuiz = surveyId => {
-    // this.surveyDeleteMutation({input: {id: quizId}});
+  handleDeleteQuiz = async surveyId => {
+    this.setState({isLoading: true});
+
+    await this.props.deleteSurvey(surveyId);
+    routeRefresh(this.props.history, "/surveys");
+
+    this.setState({isLoading: false});
   };
 
-  // handleSubscriptions = (prev, newData) => {
-  //   if (newData.onCreateSurvey) {
-  //     const surveys = [...prev.listSurveys.items];
-  //     console.log(`survey "${newData.onCreateSurvey.title}" created`);
-  //     prev.listSurveys.items = [newData.onCreateSurvey, ...surveys];
-  //   }
-  //
-  //   if (newData.onDeleteSurvey) {
-  //     console.log(`survey "${newData.onDeleteSurvey.title}" deleted`);
-  //     prev.listSurveys.items = prev.listSurveys.items.filter(item => item.id !== newData.onDeleteSurvey.id);
-  //   }
-  //
-  //   return prev;
-  // };
-
   render() {
-    const {surveys} = this.state;
-
-    console.log(surveys);
+    const {surveys, isLoading} = this.state;
 
     return (
       <div className="container">
@@ -54,7 +46,8 @@ class Surveys extends Component {
           </Link>
         </div>
         <div>
-          {surveys.map(obj =>
+          {isLoading && <h3>Loading...</h3>}
+          {!isLoading && surveys.map(obj =>
             <QuizRow
               title={obj.title}
               status={obj.status}
@@ -62,8 +55,8 @@ class Surveys extends Component {
               expectedNum={obj.expectedNum}
               votesNum={obj.votesNum}
               pin={obj.pin}
-              id={obj.id}
-              key={obj.id}
+              id={obj.surveyId}
+              key={obj.surveyId}
               deleteHandler={this.handleDeleteQuiz}
             />
           )}
@@ -75,6 +68,7 @@ class Surveys extends Component {
 
 const mapDispatchToProps = dispatch => ({
   getSurveys: (ownerId) => dispatch(getSurveys(ownerId)),
+  deleteSurvey: (surveyId) => dispatch(deleteSurvey(surveyId)),
 });
 
 export default connect(

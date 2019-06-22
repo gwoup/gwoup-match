@@ -6,12 +6,13 @@ or in the "license" file accompanying this file. This file is distributed on an 
 See the License for the specific language governing permissions and limitations under the License.
 */
 
-
 /* Amplify Params - DO NOT EDIT
 You can access the following resource attributes as environment variables from your Lambda function
 var environment = process.env.ENV
 var region = process.env.REGION
-var authGwoupa00fb6f3UserPoolId = process.env.AUTH_GWOUPA00FB6F3_USERPOOLID
+var authGwoupba07346bUserPoolId = process.env.AUTH_GWOUPBA07346B_USERPOOLID
+var storageSurveyName = process.env.STORAGE_SURVEY_NAME
+var storageSurveyArn = process.env.STORAGE_SURVEY_ARN
 
 Amplify Params - DO NOT EDIT */
 const AWS = require('aws-sdk');
@@ -30,17 +31,16 @@ if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + '-' + process.env.ENV;
 }
 
-const userIdPresent = false;//true;
+const userIdPresent = true; // TODO: update in case is required to use that definition
 const partitionKeyName = "surveyId";
 const partitionKeyType = "S";
-const sortKeyName = "";
-const sortKeyType = "";
+const sortKeyName = "ownerId";
+const sortKeyType = "S";
 const hasSortKey = sortKeyName !== "";
 const path = "/surveys";
 const UNAUTH = 'UNAUTH';
 const hashKeyPath = '/:' + partitionKeyName;
 const sortKeyPath = hasSortKey ? '/:' + sortKeyName : '';
-
 // declare a new express app
 var app = express()
 app.use(bodyParser.json())
@@ -59,20 +59,27 @@ const getUserId = (authProvider) => {
   return parts[parts.length - 1];
 };
 
+// convert url string param to expected Type
+const convertUrlType = (param, type) => {
+  switch (type) {
+    case "N":
+      return Number.parseInt(param);
+    default:
+      return param;
+  }
+}
 
 app.get('/surveys', function (req, res) {
-  var condition = {};
   // req.apiGateway.event.requestContext.identity.cognitoIdentityId
-  const userId = getUserId(req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider);
-
-  condition[partitionKeyName] = {
-    ComparisonOperator: 'EQ',
-    AttributeValueList: [userId]
-  };
+  const currentUserId = getUserId(req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider);
 
   let params = {
     TableName: tableName,
-    KeyConditions: condition
+    IndexName: "ownerId",
+    KeyConditionExpression: "ownerId = :ownerId",
+    ExpressionAttributeValues: {
+      ":ownerId": currentUserId,
+    },
   };
 
   dynamodb.query(params, (err, data) => {
@@ -133,34 +140,26 @@ app.put('/surveys/answers', function (req, res) {
 
 
 // delete by Id
-app.delete('/survey', function (req, res) {
-  var condition = {};
+app.delete('/surveys', function (req, res) {
   const userId = getUserId(req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider);
-
-  condition[partitionKeyName] = {
-    ComparisonOperator: 'EQ',
-    AttributeValueList: [userId]
-  };
-
-  condition['surveyId'] = {
-    ComparisonOperator: 'EQ',
-    AttributeValueList: [{"S": req.query.surveyId}]
-  };
+  const {surveyId} = req.query;
 
   let params = {
     TableName: tableName,
-    KeyConditions: condition
+    Key: {
+      surveyId,
+      ownerId: userId,
+    }
   };
 
-  // dynamodb.delete(params, (err, data) => {
-  //   if (err) {
-  //     res.statusCode = 500;
-  //     res.json({error: 'Could not load items: ' + err});
-  //   } else {
-  //     res.json({data: data.Items});
-  //   }
-  // });
-  res.json({data: []});
+  dynamodb.delete(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not delete item: ' + err});
+    } else {
+      res.json({data});
+    }
+  });
 });
 
 app.listen(3000, function () {
@@ -170,4 +169,4 @@ app.listen(3000, function () {
 // Export the app object. When executing the application local this does nothing. However,
 // to port it to AWS Lambda we will create a wrapper around that will load the app from
 // this file
-module.exports = app
+module.exports = app;

@@ -5,10 +5,6 @@
 		"env": {
 			"Type": "String"
 		},
-		"authgwoupa00fb6f3UserPoolId": {
-			"Type": "String",
-			"Default": "authgwoupa00fb6f3UserPoolId"
-		},
 		"storagesurveyName": {
 			"Type": "String",
 			"Default": "storagesurveyName"
@@ -16,6 +12,10 @@
 		"storagesurveyArn": {
 			"Type": "String",
 			"Default": "storagesurveyArn"
+		},
+		"authgwoupba07346bUserPoolId": {
+			"Type": "String",
+			"Default": "authgwoupba07346bUserPoolId"
 		}
 	},
 	"Conditions": {
@@ -63,8 +63,14 @@
 						"REGION": {
 							"Ref": "AWS::Region"
 						},
-						"AUTH_GWOUPA00FB6F3_USERPOOLID": {
-							"Ref": "authgwoupa00fb6f3UserPoolId"
+						"AUTH_GWOUPBA07346B_USERPOOLID": {
+							"Ref": "authgwoupba07346bUserPoolId"
+						},
+						"STORAGE_SURVEY_NAME": {
+							"Ref": "storagesurveyName"
+						},
+						"STORAGE_SURVEY_ARN": {
+							"Ref": "storagesurveyArn"
 						}
 					}
 				},
@@ -77,8 +83,8 @@
 				"Runtime": "nodejs8.10",
 				"Timeout": "25",
 				"Code": {
-					"S3Bucket": "gwoup-dev-20190621152151-deployment",
-					"S3Key": "amplify-builds/survey-1561135526-latest-build.zip"
+					"S3Bucket": "gwoup-dev-20190621221154-deployment",
+					"S3Key": "amplify-builds/survey-1561153126-latest-build.zip"
 				}
 			}
 		},
@@ -88,12 +94,12 @@
 				"RoleName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"gwoupLambdaRolef0a7abf6",
+						"gwoupLambdaRole8efa06ef",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"gwoupLambdaRolef0a7abf6",
+									"gwoupLambdaRole8efa06ef",
 									"-",
 									{
 										"Ref": "env"
@@ -170,11 +176,7 @@
 								"dynamodb:UpdateItem",
 								"dynamodb:DeleteItem"
 							],
-							"Resource": [
-								{
-									"Ref": "storagesurveyArn"
-								}
-							]
+							"Resource": "arn:aws:dynamodb:us-west-2:565725559538:table/survey-dev/index/*"
 						}
 					]
 				}
@@ -295,12 +297,42 @@
 											},
 											":userpool/",
 											{
-												"Ref": "authgwoupa00fb6f3UserPoolId"
+												"Ref": "authgwoupba07346bUserPoolId"
 											}
 										]
 									]
 								}
 							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"dynamodb:Put*",
+								"dynamodb:Create*",
+								"dynamodb:BatchWriteItem",
+								"dynamodb:Get*",
+								"dynamodb:BatchGetItem",
+								"dynamodb:List*",
+								"dynamodb:Describe*",
+								"dynamodb:Scan",
+								"dynamodb:Query",
+								"dynamodb:Update*",
+								"dynamodb:RestoreTable*",
+								"dynamodb:Delete*"
+							],
+							"Resource": [
+								{
+									"Ref": "storagesurveyArn"
+								}
+							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"dynamodb:Scan",
+								"dynamodb:Query"
+							],
+							"Resource": "arn:aws:dynamodb:us-west-2:565725559538:table/survey-dev/index/*"
 						}
 					]
 				}

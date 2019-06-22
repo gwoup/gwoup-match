@@ -1,54 +1,62 @@
 {
-  "auth": {
-    "gwoupa00fb6f3": {
-      "service": "Cognito",
-      "providerPlugin": "awscloudformation"
-    }
-  },
-  "function": {
-    "survey": {
-      "service": "Lambda",
-      "providerPlugin": "awscloudformation",
-      "build": true,
-      "dependsOn": [
-        {
-          "category": "auth",
-          "resourceName": "gwoupa00fb6f3",
-          "attributes": [
-            "UserPoolId"
-          ]
-        },
-        {
-          "category": "storage",
-          "resourceName": "survey",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
-    }
-  },
-  "api": {
-    "survey": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "survey",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
-    }
-  },
-  "storage": {
-    "survey": {
-      "service": "DynamoDB",
-      "providerPlugin": "awscloudformation"
-    }
-  }
+	"auth": {
+		"gwoupba07346b": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation"
+		}
+	},
+	"storage": {
+		"survey": {
+			"service": "DynamoDB",
+			"providerPlugin": "awscloudformation"
+		}
+	},
+	"function": {
+		"survey": {
+			"service": "Lambda",
+			"providerPlugin": "awscloudformation",
+			"build": true,
+			"dependsOn": [
+				{
+					"category": "storage",
+					"resourceName": "survey",
+					"attributes": [
+						"Name",
+						"Arn"
+					]
+				},
+				{
+					"category": "auth",
+					"resourceName": "gwoupba07346b",
+					"attributes": [
+						"UserPoolId"
+					]
+				},
+				{
+					"category": "storage",
+					"resourceName": "survey",
+					"attributes": [
+						"Name",
+						"Arn"
+					]
+				}
+			]
+		}
+	},
+	"api": {
+		"survey": {
+			"service": "API Gateway",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [
+				{
+					"category": "function",
+					"resourceName": "survey",
+					"attributes": [
+						"Name",
+						"Arn"
+					]
+				}
+			]
+		}
+	}
 }

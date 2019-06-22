@@ -12,6 +12,13 @@
             "Type": "String"
         },
         
+        "sortKeyName": {
+            "Type": "String"
+        },
+        "sortKeyType": {
+            "Type": "String"
+        },
+        
         "tableName": {
             "Type": "String"
         }
@@ -35,26 +42,34 @@
                   {
                       "AttributeName": "surveyId",
                       "AttributeType": "S"
-                  },
-                    {
-                        "AttributeName": "ownerId",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "status",
-                        "AttributeType": "S"
-                    }  ,
-
-                    {
-                        "AttributeName": "pin",
-                        "AttributeType": "S"
-                    }
+                  }  , 
+                  
+                  {
+                      "AttributeName": "ownerId",
+                      "AttributeType": "S"
+                  }  , 
+                  
+                  {
+                      "AttributeName": "pin",
+                      "AttributeType": "S"
+                  }  , 
+                  
+                  {
+                      "AttributeName": "status",
+                      "AttributeType": "S"
+                  } 
+                  
                 ],
                 "KeySchema": [
                   
                   {
                     "AttributeName": "surveyId",
                     "KeyType": "HASH"
+                  }  , 
+                  
+                  {
+                    "AttributeName": "ownerId",
+                    "KeyType": "RANGE"
                   } 
                   
                 ],
@@ -87,21 +102,21 @@
                 }
                 
                 ,"GlobalSecondaryIndexes": [
-
+                  
                     {
                         "IndexName": "ownerId",
                         "KeySchema": [
-
+                            
                             {
                                 "AttributeName": "ownerId",
                                 "KeyType": "HASH"
-                            }  ,
-
+                            }  , 
+                            
                             {
                                 "AttributeName": "status",
                                 "KeyType": "RANGE"
-                            }
-
+                            } 
+                            
                         ],
                         "Projection": {
                             "ProjectionType": "ALL"
@@ -110,17 +125,17 @@
                             "ReadCapacityUnits": "5",
                             "WriteCapacityUnits": "5"
                         }
-                    }  ,
-
+                    }  , 
+                  
                     {
                         "IndexName": "pin",
                         "KeySchema": [
-
+                            
                             {
                                 "AttributeName": "pin",
                                 "KeyType": "HASH"
-                            }
-
+                            } 
+                            
                         ],
                         "Projection": {
                             "ProjectionType": "ALL"
@@ -129,10 +144,10 @@
                             "ReadCapacityUnits": "5",
                             "WriteCapacityUnits": "5"
                         }
-                    }
-
+                    } 
+                  
                 ]
-
+                
             }
         }
     },
@@ -158,6 +173,17 @@
         "PartitionKeyType": {
             "Value": {
                 "Ref": "partitionKeyType"
+            }
+        },
+        
+        "SortKeyName": {
+            "Value": {
+                "Ref": "sortKeyName"
+            }
+        },
+        "SortKeyType": {
+            "Value": {
+                "Ref": "sortKeyType"
             }
         },
         

@@ -1,7 +1,15 @@
 {
     "permissions": {
         "auth": {
-            "gwoupa00fb6f3": [
+            "gwoupba07346b": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ]
+        },
+        "storage": {
+            "survey": [
                 "create",
                 "read",
                 "update",

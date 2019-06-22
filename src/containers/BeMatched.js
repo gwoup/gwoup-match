@@ -35,7 +35,11 @@ class BeMatched extends Component {
         pin: ""
       });
 
-      this.props.history.push('/bematched/survey');
+      if (survey.status === "PUBLISHED") {
+        this.props.history.push('/bematched/survey');
+      } else {
+        this.props.history.push(`/bematched/survey/status/${survey.surveyId}`);
+      }
 
     } else {
       this.setState({

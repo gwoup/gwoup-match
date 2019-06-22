@@ -33,6 +33,7 @@ if (process.env.ENV && process.env.ENV !== "NONE") {
 
 const userIdPresent = true; // TODO: update in case is required to use that definition
 const partitionKeyName = "surveyId";
+const demoUserId = "";
 const partitionKeyType = "S";
 const sortKeyName = "ownerId";
 const sortKeyType = "S";
@@ -109,6 +110,48 @@ app.get('/surveys', function (req, res) {
   });
 });
 
+// Get by Pin
+app.get('/surveys/by-pin', function (req, res) {
+  const {pin} = req.query;
+
+  let params = {
+    TableName: tableName,
+    IndexName: "pin",
+    KeyConditionExpression: "pin = :pin",
+    ExpressionAttributeValues: {
+      ":pin": pin,
+    },
+  };
+
+  dynamodb.query(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not find item: ' + err});
+    } else {
+      if (data.Items.length) {
+        const survey = data.Items[0];
+        const {title, questions, status, surveyId} = survey;
+        if (survey.status === "PUBLISHED" || survey.status === "COMPLETED") {
+
+          res.json({
+            title,
+            questions,
+            status,
+            surveyId
+          });
+
+        } else {
+          res.statusCode = 404;
+          res.json({error: 'survey is not available'});
+        }
+      } else {
+        res.statusCode = 404;
+        res.json({error: 'survey is not available'});
+      }
+    }
+  });
+});
+
 // Get by Id
 app.get('/surveys/:surveyId', function (req, res) {
   const currentUserId = getUserId(req);
@@ -127,7 +170,7 @@ app.get('/surveys/:surveyId', function (req, res) {
       res.statusCode = 500;
       res.json({error: 'Could not find item: ' + err});
     } else {
-      res.json({data});
+      res.json({...data[0]});
     }
   });
 });

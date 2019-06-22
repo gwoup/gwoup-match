@@ -91,9 +91,15 @@ const getPublishedSurveyByPin = (pin) => {
     try {
       dispatch({type: Types.RESET_MATCHING_SURVEY});
 
-      const result = await API.graphql(graphqlOperation(getSurveyByPin, {pin}));
-      const survey = result.data.getSurveyByPin.items.length ? result.data.getSurveyByPin.items[0] : null;
-      if (survey && survey.status === SurveyStatuses.PUBLISHED) {
+      const survey = await API.get('survey', `/surveys/by-pin`, {
+        queryStringParameters: {
+          pin
+        }
+      });
+
+      console.log(survey);
+
+      if (survey) {
         survey.questions = deserializeQuestionsArr(survey.questions);
         return onSuccess(survey);
       }

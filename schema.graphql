@@ -27,7 +27,7 @@ type Survey @model( queries: { get: "fetchSurvey", list: "listSurveys", } )
 enum SurveyStatus {
     DRAFT
     PUBLISHED
-    VOTED
+    COMPLETED
     CLOSED
 }
 

@@ -7,6 +7,9 @@ import './index.css';
 import {setAnswerStatus} from "../../../actions/surveys";
 import {connect} from "react-redux";
 
+const createSliderWithTooltip = Slider.createSliderWithTooltip;
+const SliderWithToolTip = createSliderWithTooltip(Slider);
+
 class QuestionLinearScaleReply extends Component {
 
   constructor(props) {
@@ -48,12 +51,11 @@ class QuestionLinearScaleReply extends Component {
       <Row>
         <Col xs={12} md={12}>
           <div className="labelContainer">
-            <div className="minLabel">{minValueTitle}</div>
-            <div className="valueLabel">{value}</div>
-            <div className="maxLabel">{maxValueTitle}</div>
+            <div className="minLabel">{minValue}: {minValueTitle}</div>
+            <div className="maxLabel">{maxValue}: {maxValueTitle}</div>
           </div>
           <div style={{width: "100%"}}>
-            <Slider
+            <SliderWithToolTip
               min={parseInt(minValue)}
               max={parseInt(maxValue)}
               value={value}

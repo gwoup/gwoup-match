@@ -19,7 +19,6 @@ class BeMatchedBySurvey extends Component {
       pin: "",
       title: "",
       questions: [],
-      questionsRefs: {},
       answers: [],
       isSaving: false,
       isFormValid: false,
@@ -107,8 +106,7 @@ class BeMatchedBySurvey extends Component {
 
   isFormValid = () => {
     const {formAnswersStatus} = this.props;
-    const isFormValid = Object.values(formAnswersStatus).every(val => val);
-    return isFormValid;
+    return Object.values(formAnswersStatus).every(val => val);
   };
 
   render() {

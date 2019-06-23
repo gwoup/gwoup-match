@@ -112,6 +112,7 @@ app.get('/surveys', function (req, res) {
 
 // Get by Pin
 app.get('/surveys/by-pin', function (req, res) {
+  const currentUserId = getUserId(req);
   const {pin} = req.query;
 
   let params = {
@@ -137,7 +138,8 @@ app.get('/surveys/by-pin', function (req, res) {
             title,
             questions,
             status,
-            surveyId
+            surveyId,
+            answered: tookPartInSurvey(currentUserId, survey.responses)
           });
 
         } else {
@@ -148,6 +150,50 @@ app.get('/surveys/by-pin', function (req, res) {
         res.statusCode = 404;
         res.json({error: 'survey is not available'});
       }
+    }
+  });
+});
+
+// Get status by Id
+app.get('/surveys/status/:surveyId', function (req, res) {
+  const currentUserId = getUserId(req);
+  const {surveyId} = req.params;
+  // const {surveyId} = req.query;
+
+  let params = {
+    TableName: tableName,
+    Key: {
+      surveyId
+    }
+  };
+
+  console.log(">>>", params);
+
+  dynamodb.get(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not find item: ' + err});
+    } else {
+      console.log('item:', data[0]);
+      const survey = data[0];
+      // is owner or took part in responses
+
+      if (survey.ownerId !== currentUserId && !tookPartInSurvey(currentUserId, survey.responses)) {
+        res.statusCode = 403;
+        return;
+      }
+
+      const {surveyId, title, minGroupSize, maxGroupSize, preferredGroupSize, pin} = survey;
+
+      res.json({
+        surveyId,
+        title,
+        minGroupSize,
+        maxGroupSize,
+        preferredGroupSize,
+        pin,
+        answersNumber: survey.responses.length
+      });
     }
   });
 });
@@ -269,9 +315,83 @@ app.put('/surveys/publish', function (req, res) {
   });
 });
 
+const tookPartInSurvey = (userId, responses) => {
+  return responses.some(response => response.userId === userId);
+};
+
 // add answers
-app.put('/surveys/answers', function (req, res) {
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
+app.post('/surveys/answers', function (req, res) {
+  const currentUserId = getUserId(req);
+  const {pin, answers} = req.body;
+
+  // + get by pin - is survey available in status "PUBLISHED"
+  // + check - is current user answer already available
+  // - answers and corresponding questions has to be available
+  // - answers format for corresponding questions (JSON validation)
+
+  let params = {
+    TableName: tableName,
+    IndexName: "pin",
+    KeyConditionExpression: "pin = :pin",
+    ExpressionAttributeValues: {
+      ":pin": pin,
+    },
+  };
+
+  dynamodb.query(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not find item: ' + err});
+    } else {
+      if (data.Items.length) {
+        const survey = data.Items[0];
+
+        const {responses, status, surveyId, ownerId} = survey;
+
+        if (status !== "PUBLISHED") {
+          res.statusCode = 403;
+          res.json({error: 'survey is not available for answers'});
+          return;
+        }
+
+        if (tookPartInSurvey(currentUserId, responses)) {
+          res.statusCode = 403;
+          res.json({error: 'survey was already answered by the current user'});
+          return;
+        }
+
+        let answerParams = {
+          TableName: tableName,
+          Key: {
+            surveyId,
+            ownerId
+          },
+          UpdateExpression: "SET #attrName = list_append(#attrName, :attrValue)",
+          ExpressionAttributeNames: {
+            "#attrName": "responses"
+          },
+          ExpressionAttributeValues: {
+            ":attrValue": [{
+              "userId": currentUserId,
+              "answers": answers
+            }]
+          }
+        };
+
+        dynamodb.update(answerParams, (err, data) => {
+          if (err) {
+            res.statusCode = 500;
+            res.json({error: 'Could not add answer: ' + err});
+          } else {
+            res.json({status: "OK"});
+          }
+        });
+      } else {
+        res.statusCode = 404;
+        res.json({error: 'survey is not available'});
+      }
+    }
+  });
 });
 
 

@@ -15,9 +15,9 @@ class QuestionLinearScaleReply extends Component {
   constructor(props) {
     super(props);
 
-    const {id, minValue} = this.props.question;
+    const {id} = this.props.question;
     this.state = {
-      value: minValue,
+      value: null,
       id
     };
   }
@@ -31,11 +31,13 @@ class QuestionLinearScaleReply extends Component {
   }
 
   isValid = () => {
-    return true;
+    return this.state.value !== null;
   };
 
   onSliderChange = (value) => {
     this.setState({value}, () => {
+      this.props.setAnswerStatus(this.props.question.id, this.isValid());
+
       this.props.handleAnswer({
         questionId: this.state.id,
         value: JSON.stringify({value: this.state.value})
@@ -58,7 +60,7 @@ class QuestionLinearScaleReply extends Component {
             <SliderWithToolTip
               min={parseInt(minValue)}
               max={parseInt(maxValue)}
-              value={value}
+              value={value || minValue}
               onChange={this.onSliderChange}
             />
           </div>

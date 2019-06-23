@@ -54,9 +54,6 @@ class BeMatchedBySurvey extends Component {
 
     if (typeof matchingSurvey === "undefined" || matchingSurvey === null) {
       this.props.history.push('/bematched');
-    } else {
-      const {pin, title, questions} = matchingSurvey;
-      this.setState({pin, title, questions});
     }
   }
 
@@ -83,20 +80,23 @@ class BeMatchedBySurvey extends Component {
       ];
     }
 
+    console.log(updatedAnswers);
+
     this.setState({answers: updatedAnswers});
   };
 
   handleSubmit = async event => {
     event.preventDefault();
-    const {surveyId} = this.props.matchingSurvey;
+    const {surveyId, pin} = this.props.matchingSurvey;
 
     this.setState({isSaving: true});
     const {answers} = this.state;
 
     try {
-      // add validation
-      await this.props.submitAnswer(surveyId, answers);
-      this.props.history.push(`/bematched/survey/status/${surveyId}`);
+      if (this.isFormValid()) {
+        await this.props.submitAnswer(pin, answers);
+        this.props.history.push(`/bematched/status/${surveyId}`);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -110,7 +110,8 @@ class BeMatchedBySurvey extends Component {
   };
 
   render() {
-    const {title, pin, questions, isSaving} = this.state;
+    const {title, pin, questions} = this.props.matchingSurvey;
+    const {isSaving} = this.state;
 
     return (
       <div className="BeMatchedBySurvey">
@@ -140,11 +141,10 @@ class BeMatchedBySurvey extends Component {
                   bsSize="large"
                   bsStyle="success"
                   disabled={!this.isFormValid()}
-                  type="button"
+                  type="submit"
                   isLoading={isSaving}
                   text="Submit"
                   loadingText="Publishing…"
-                  onClick={() => this.handlePublish()}
                 />
               </Col>
             </Row>
@@ -163,7 +163,7 @@ const mapStateToProps = (state) => (
 );
 
 const mapDispatchToProps = dispatch => ({
-  submitAnswer: (surveyId, answers) => dispatch(submitAnswer(surveyId, answers)),
+  submitAnswer: (pin, answers) => dispatch(submitAnswer(pin, answers)),
   setAnswerStatus: (questionId, status) => dispatch(setAnswerStatus(questionId, status))
 });
 

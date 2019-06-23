@@ -16,6 +16,8 @@ const Types = {
   DELETE_SURVEY_FAILURE: "DELETE_SURVEY_FAILURE",
   PUBLISH_SURVEY_FAILURE: "PUBLISH_SURVEY_FAILURE",
   SET_ANSWER_STATUS: "SET_ANSWER_STATUS",
+  ADD_SURVEY_STATUS: "ADD_SURVEY_STATUS",
+  ADD_SURVEY_STATUS_FAILURE: "ADD_SURVEY_STATUS_FAILURE",
 };
 
 const SurveyStatuses = {
@@ -98,6 +100,7 @@ const getPublishedSurveyByPin = (pin) => {
       });
 
       if (survey) {
+        survey.pin = pin;
         survey.questions = deserializeQuestionsArr(survey.questions);
         return onSuccess(survey);
       }
@@ -185,7 +188,7 @@ const publishSurvey = (surveyId) => {
   }
 };
 
-const submitAnswer = (surveyId, answers) => {
+const submitAnswer = (pin, answers) => {
   return async dispatch => {
     const onSuccess = (success) => {
       dispatch({type: Types.ADD_SURVEY, payload: success});
@@ -198,23 +201,43 @@ const submitAnswer = (surveyId, answers) => {
     };
 
     try {
-      const survey = await API.graphql(graphqlOperation(fetchSurvey, {id: surveyId}));
-      // check - is response available
-      // if not - add response, update
-      // TODO:
-      let response = {
-        respondentId: "",
-        answers
-      };
-      // survey.responses
-      await API.graphql(graphqlOperation(updateSurvey, {input: survey}));
-      return onSuccess(1);
+      const response = await API.post('survey', '/surveys/answers', {
+        body: {
+          pin,
+          answers
+        }
+      });
+
+      return onSuccess(response);
     } catch (error) {
       return onError(error);
     }
   }
 };
 
+const getSurveyStatusById = (surveyId) => {
+  return async dispatch => {
+    const onSuccess = (success) => {
+      dispatch({type: Types.ADD_SURVEY_STATUS, payload: success});
+      return success;
+    };
+
+    const onError = (error) => {
+      dispatch({type: Types.ADD_SURVEY_STATUS_FAILURE, error});
+      return error;
+    };
+
+    try {
+      const response = await API.get('survey', `/surveys/status/${surveyId}`, {});
+
+      return onSuccess(response);
+    } catch (error) {
+      return onError(error);
+    }
+  }
+};
+
+// answers validation
 const setAnswerStatus = (questionId, status) => ({
   type: Types.SET_ANSWER_STATUS,
   payload: {
@@ -231,6 +254,7 @@ export {
   deleteSurvey,
   publishSurvey,
   setAnswerStatus,
+  getSurveyStatusById,
   Types,
   SurveyStatuses
 };

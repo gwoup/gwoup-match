@@ -24,7 +24,7 @@ export default ({ childProps }) =>
     <AuthenticatedRoute path="/surveys" exact component={Surveys} props={childProps} />
     <AuthenticatedRoute path="/bematched" exact component={BeMatched} props={childProps} />
     <AuthenticatedRoute path="/bematched/survey" exact component={BeMatchedBySurvey} props={childProps} />
-    <AuthenticatedRoute path="/bematched/status" exact component={BeMatchedStatus} props={childProps} />
+    <AuthenticatedRoute path="/bematched/status/:surveyId" exact component={BeMatchedStatus} props={childProps} />
     <UnauthenticatedRoute path="/signup" exact component={Signup} props={childProps} />
     <UnauthenticatedRoute path="/login" exact component={Login} props={childProps} />
     { /* Finally, catch all unmatched routes */ }

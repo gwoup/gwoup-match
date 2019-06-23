@@ -1,7 +1,6 @@
 import {API, graphqlOperation} from "aws-amplify";
 import {createSurvey, updateSurvey} from "../graphql/mutations";
 import {fetchSurvey} from "../graphql/queries";
-import {getSurveyByPin} from "../graphql/customQueries";
 import {deserializeQuestionsArr} from "../utils/survey";
 
 const Types = {
@@ -16,12 +15,13 @@ const Types = {
   DELETE_SURVEY: "DELETE_SURVEY",
   DELETE_SURVEY_FAILURE: "DELETE_SURVEY_FAILURE",
   PUBLISH_SURVEY_FAILURE: "PUBLISH_SURVEY_FAILURE",
+  SET_ANSWER_STATUS: "SET_ANSWER_STATUS",
 };
 
 const SurveyStatuses = {
   DRAFT: "DRAFT",
   PUBLISHED: "PUBLISHED",
-  VOTED: "VOTED",
+  COMPLETED: "COMPLETED",
   CLOSED: "CLOSED"
 };
 
@@ -96,8 +96,6 @@ const getPublishedSurveyByPin = (pin) => {
           pin
         }
       });
-
-      console.log(survey);
 
       if (survey) {
         survey.questions = deserializeQuestionsArr(survey.questions);
@@ -207,7 +205,7 @@ const submitAnswer = (surveyId, answers) => {
       let response = {
         respondentId: "",
         answers
-      }
+      };
       // survey.responses
       await API.graphql(graphqlOperation(updateSurvey, {input: survey}));
       return onSuccess(1);
@@ -217,6 +215,13 @@ const submitAnswer = (surveyId, answers) => {
   }
 };
 
+const setAnswerStatus = (questionId, status) => ({
+  type: Types.SET_ANSWER_STATUS,
+  payload: {
+    questionId, status
+  }
+});
+
 export {
   getSurveys,
   saveSurvey,
@@ -225,6 +230,7 @@ export {
   submitAnswer,
   deleteSurvey,
   publishSurvey,
+  setAnswerStatus,
   Types,
   SurveyStatuses
 };

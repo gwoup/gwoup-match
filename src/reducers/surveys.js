@@ -1,6 +1,6 @@
 import {Types} from '../actions/surveys';
 
-const defaultState = {collection: [], matchingSurvey: null};
+const defaultState = {collection: [], matchingSurvey: null, formAnswersStatus: {}};
 
 const reducer = (state = defaultState, action) => {
   switch (action.type) {
@@ -12,7 +12,15 @@ const reducer = (state = defaultState, action) => {
       return {...state, matchingSurvey: action.payload};
 
     case Types.RESET_MATCHING_SURVEY:
-      return {...state, matchingSurvey: null};
+      return {...state, matchingSurvey: null, formAnswersStatus: {}};
+
+    case Types.SET_ANSWER_STATUS:
+      const {questionId, status} = action.payload;
+
+      const formState = {...state.formAnswersStatus} || {};
+      formState[questionId] = status;
+
+      return {...state, formAnswersStatus: formState};
 
     default:
       return state;

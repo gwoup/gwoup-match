@@ -4,8 +4,11 @@ import {Col, ControlLabel, FormControl, FormGroup, Grid, Row, HelpBlock} from "r
 
 import LoaderButton from "../../components/LoaderButton";
 import "./index.css";
-import QuestionContainer from "../../components/Questions/QuestionContainer";
-import {submitAnswer} from "../../actions/surveys";
+import {submitAnswer, setAnswerStatus} from "../../actions/surveys";
+import QuestionLinearScale from "../../components/Questions/QuestionLinearScale";
+import QuestionLinearScaleReply from "../../components/Questions/QuestionLinearScaleReply";
+import QuestionDateTime from "../../components/Questions/QuestionDateTime";
+import QuestionDateTimeReply from "../../components/Questions/QuestionDateTimeReply";
 
 
 class BeMatchedBySurvey extends Component {
@@ -16,12 +19,36 @@ class BeMatchedBySurvey extends Component {
       pin: "",
       title: "",
       questions: [],
+      questionsRefs: {},
       answers: [],
       isSaving: false,
+      isFormValid: false,
       validationState: null,
       errorMsg: null
     };
   }
+
+  getQuestionByType = (questionType, question) => {
+    if (questionType === QuestionLinearScale.questionType) {
+      return (
+        <QuestionLinearScaleReply
+          question={question}
+          handleAnswer={this.handleAnswer}
+        />
+      )
+    }
+
+    if (questionType === QuestionDateTime.questionType) {
+      return (
+        <QuestionDateTimeReply
+          question={question}
+          handleAnswer={this.handleAnswer}
+        />
+      )
+    }
+
+    return null;
+  };
 
   componentDidMount() {
     const {matchingSurvey} = this.props;
@@ -34,7 +61,7 @@ class BeMatchedBySurvey extends Component {
     }
   }
 
-  handleAnswerQuestion = (answer) => {
+  handleAnswer = (answer) => {
     let answerIndex = -1;
     const {answers} = this.state;
 
@@ -45,33 +72,32 @@ class BeMatchedBySurvey extends Component {
       }
     }
 
-    let updatedQuestions;
+    let updatedAnswers;
 
     if (answerIndex === -1) {
-      updatedQuestions = {answers: {...answers, answer}};
+      updatedAnswers = [...answers, answer];
     } else {
-      updatedQuestions = [
+      updatedAnswers = [
         ...answers.slice(0, answerIndex),
         answer,
         ...answers.slice(answerIndex + 1, answers.length)
       ];
     }
 
-    console.log("updated questions", updatedQuestions);
-    this.setState({answers: updatedQuestions});
-
+    this.setState({answers: updatedAnswers});
   };
 
   handleSubmit = async event => {
     event.preventDefault();
+    const {surveyId} = this.props.matchingSurvey;
 
     this.setState({isSaving: true});
     const {answers} = this.state;
 
     try {
       // add validation
-      await this.props.submitAnswer(this.matchingSurvey.id, answers);
-      this.props.history.push('/bematched/status');
+      await this.props.submitAnswer(surveyId, answers);
+      this.props.history.push(`/bematched/survey/status/${surveyId}`);
     } catch (e) {
       console.log(e);
     }
@@ -80,7 +106,9 @@ class BeMatchedBySurvey extends Component {
   };
 
   isFormValid = () => {
-    return false;
+    const {formAnswersStatus} = this.props;
+    const isFormValid = Object.values(formAnswersStatus).every(val => val);
+    return isFormValid;
   };
 
   render() {
@@ -95,11 +123,15 @@ class BeMatchedBySurvey extends Component {
             {questions.map((question, index) =>
               <Row key={question.id} className="questionFormContainer">
                 <Col>
-                  <QuestionContainer
-                    questionNumber={index + 1}
-                    question={question}
-                    handleAnswer={this.handleAnswerQuestion}
-                  />
+                  <Grid>
+                    <Row className="questionHeader">
+                      <Col className="text-left">
+                        <b>Question {index + 1}</b>
+                        <p>{question.title}</p>
+                      </Col>
+                    </Row>
+                    {this.getQuestionByType(question.questionType, question)}
+                  </Grid>
                 </Col>
               </Row>
             )}
@@ -126,11 +158,15 @@ class BeMatchedBySurvey extends Component {
 }
 
 const mapStateToProps = (state) => (
-  {matchingSurvey: state.surveys.matchingSurvey}
+  {
+    matchingSurvey: state.surveys.matchingSurvey,
+    formAnswersStatus: state.surveys.formAnswersStatus
+  }
 );
 
 const mapDispatchToProps = dispatch => ({
   submitAnswer: (surveyId, answers) => dispatch(submitAnswer(surveyId, answers)),
+  setAnswerStatus: (questionId, status) => dispatch(setAnswerStatus(questionId, status))
 });
 
 export default connect(

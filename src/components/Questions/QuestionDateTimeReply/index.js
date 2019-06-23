@@ -2,6 +2,8 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {Col, Row, Label, Checkbox} from "react-bootstrap";
 import './index.css';
+import {setAnswerStatus} from "../../../actions/surveys";
+import {connect} from "react-redux";
 
 
 const QUESTION_DATE_STRUCTURE = [
@@ -63,8 +65,7 @@ const cloneDataArr = arr => {
   return arr.map(arr => arr.slice());
 };
 
-export default class QuestionDateTimeReply extends Component {
-
+class QuestionDateTimeReply extends Component {
   constructor(props) {
     super(props);
     const {id, questionType} = this.props.question;
@@ -75,21 +76,15 @@ export default class QuestionDateTimeReply extends Component {
     };
   }
 
-  isCellChecked = (date, time) => {
-    const {dateValue} = this.state;
-
-    try {
-      return dateValue[date][time];
-    } catch (e) {
-      return false;
-    }
-  };
+  componentDidMount() {
+    this.props.setAnswerStatus(this.props.question.id, this.isValid());
+  }
 
   handleChange = (event, dateItem, timeItem) => {
     let {dateValue} = this.state;
     let updatedDateValue = cloneDataArr(dateValue);
 
-    updatedDateValue[dateItem][timeItem] = event.target.value === "on";
+    updatedDateValue[dateItem][timeItem] = !updatedDateValue[dateItem][timeItem];
 
     // reset all other time slots on the same day
     if (timeItem === 0 && event.target.value === "on") {
@@ -104,6 +99,8 @@ export default class QuestionDateTimeReply extends Component {
     }
 
     this.setState({dateValue: updatedDateValue}, () => {
+      this.props.setAnswerStatus(this.props.question.id, this.isValid());
+
       this.props.handleAnswer({
         questionId: this.state.id,
         value: JSON.stringify(this.state.dateValue)
@@ -115,12 +112,18 @@ export default class QuestionDateTimeReply extends Component {
     return "QuestionDateTimeReply";
   }
 
-  static validator(value) {
-  }
+  isValid = () => {
+    return this.state.dateValue.some(column => column.some(cell => cell !== false));
+  };
 
   render() {
+    const {dateValue} = this.state;
+
     return (
       <Row>
+        <Col className="errorMessage">
+          {!this.isValid() && <span>At least 1 time frame has to be selected</span>}
+        </Col>
         <Col>
           <table width="100%">
             <tbody>
@@ -137,8 +140,8 @@ export default class QuestionDateTimeReply extends Component {
                     <td width="14%" key={dateItem.id} className="questionCellData">
                       <div className="cellLabel">{timeItem.description}</div>
                       <Checkbox
-                        onChange={(e) => this.handleChange(e, dateItem.id, timeItem.id)}
-                        checked={this.isCellChecked(dateItem.id, timeItem.id)}
+                        onClick={(e) => this.handleChange(e, dateItem.id, timeItem.id)}
+                        checked={dateValue[dateItem.id][timeItem.id]}
                       />
                     </td>
                   )}
@@ -156,3 +159,12 @@ QuestionDateTimeReply.propTypes = {
   question: PropTypes.object.isRequired,
   handleAnswer: PropTypes.func.isRequired
 };
+
+const mapDispatchToProps = dispatch => ({
+  setAnswerStatus: (questionId, status) => dispatch(setAnswerStatus(questionId, status))
+});
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(QuestionDateTimeReply);

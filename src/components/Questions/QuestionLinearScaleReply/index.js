@@ -4,28 +4,32 @@ import {Col, Row} from "react-bootstrap";
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import './index.css';
+import {setAnswerStatus} from "../../../actions/surveys";
+import {connect} from "react-redux";
 
-export default class QuestionLinearScaleReply extends Component {
+class QuestionLinearScaleReply extends Component {
 
   constructor(props) {
     super(props);
+
+    const {id, minValue} = this.props.question;
     this.state = {
-      value: 0
+      value: minValue,
+      id
     };
+  }
+
+  componentDidMount() {
+    this.props.setAnswerStatus(this.props.question.id, this.isValid());
   }
 
   static get questionType() {
     return "QuestionLinearScaleReply";
   }
 
-  static validator(value) {
-
-  }
-
-  componentDidMount() {
-    const {minValue} = this.props.question;
-    this.setState({value: parseInt(minValue)});
-  }
+  isValid = () => {
+    return true;
+  };
 
   onSliderChange = (value) => {
     this.setState({value}, () => {
@@ -66,3 +70,12 @@ QuestionLinearScaleReply.propTypes = {
   question: PropTypes.object.isRequired,
   handleAnswer: PropTypes.func.isRequired
 };
+
+const mapDispatchToProps = dispatch => ({
+  setAnswerStatus: (questionId, status) => dispatch(setAnswerStatus(questionId, status))
+});
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(QuestionLinearScaleReply);

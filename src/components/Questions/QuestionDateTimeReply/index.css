@@ -29,3 +29,10 @@
     float: right;
     margin: 0;
 }
+
+.errorMessage {
+    color: red;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+}

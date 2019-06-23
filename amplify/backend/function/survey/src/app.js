@@ -35,8 +35,8 @@ const userIdPresent = true; // TODO: update in case is required to use that defi
 const partitionKeyName = "surveyId";
 const demoUserId = "";
 const partitionKeyType = "S";
-const sortKeyName = "ownerId";
-const sortKeyType = "S";
+const sortKeyName = "";
+const sortKeyType = "";
 const hasSortKey = sortKeyName !== "";
 const path = "/surveys";
 const UNAUTH = 'UNAUTH';
@@ -158,7 +158,6 @@ app.get('/surveys/by-pin', function (req, res) {
 app.get('/surveys/status/:surveyId', function (req, res) {
   const currentUserId = getUserId(req);
   const {surveyId} = req.params;
-  // const {surveyId} = req.query;
 
   let params = {
     TableName: tableName,
@@ -167,33 +166,35 @@ app.get('/surveys/status/:surveyId', function (req, res) {
     }
   };
 
-  console.log(">>>", params);
-
   dynamodb.get(params, (err, data) => {
     if (err) {
       res.statusCode = 500;
       res.json({error: 'Could not find item: ' + err});
     } else {
-      console.log('item:', data[0]);
-      const survey = data[0];
-      // is owner or took part in responses
+      if (data.Item) {
+        const survey = data.Item;
+        // is owner or took part in responses
 
-      if (survey.ownerId !== currentUserId && !tookPartInSurvey(currentUserId, survey.responses)) {
-        res.statusCode = 403;
-        return;
+        if (survey.ownerId !== currentUserId && !tookPartInSurvey(currentUserId, survey.responses)) {
+          res.statusCode = 403;
+          return;
+        }
+
+        const {surveyId, title, minGroupSize, maxGroupSize, preferredGroupSize, pin} = survey;
+
+        res.json({
+          surveyId,
+          title,
+          minGroupSize,
+          maxGroupSize,
+          preferredGroupSize,
+          pin,
+          answersNumber: survey.responses.length
+        });
+      } else {
+        res.statusCode = 404;
+        res.json({});
       }
-
-      const {surveyId, title, minGroupSize, maxGroupSize, preferredGroupSize, pin} = survey;
-
-      res.json({
-        surveyId,
-        title,
-        minGroupSize,
-        maxGroupSize,
-        preferredGroupSize,
-        pin,
-        answersNumber: survey.responses.length
-      });
     }
   });
 });
@@ -206,8 +207,7 @@ app.get('/surveys/:surveyId', function (req, res) {
   let params = {
     TableName: tableName,
     Key: {
-      surveyId,
-      ownerId: currentUserId,
+      surveyId
     }
   };
 
@@ -216,14 +216,20 @@ app.get('/surveys/:surveyId', function (req, res) {
       res.statusCode = 500;
       res.json({error: 'Could not find item: ' + err});
     } else {
-      res.json({...data[0]});
+      console.log('get by id', data);
+      if (data[0].ownerId === currentUserId) {
+        res.json({...data[0]});
+      } else {
+        res.statusCode = 403;
+        res.json({error: "You don't have permissions to read this item"});
+      }
     }
   });
 });
 
 // create
 app.post('/surveys', function (req, res) {
-  const userId = getUserId(req);
+  const currentUserId = getUserId(req);
   const {title, questions, minGroupSize, maxGroupSize, preferredGroupSize} = req.body;
 
   let params = {
@@ -237,7 +243,7 @@ app.post('/surveys', function (req, res) {
       responses: [],
       questions,
       status: 'DRAFT',
-      ownerId: userId,
+      ownerId: currentUserId,
       surveyId: uuidv4()
     }
   };
@@ -260,11 +266,12 @@ app.put('/surveys', function (req, res) {
   let params = {
     TableName: tableName,
     Key: {
-      ownerId: currentUserId,
       surveyId
     },
+    ConditionExpression: "ownerId = :ownerId",
     UpdateExpression: "set title = :title, responses = :responses, minGroupSize = :minGroupSize, maxGroupSize = :maxGroupSize, preferredGroupSize = :preferredGroupSize, questions = :questions",
     ExpressionAttributeValues: {
+      ":ownerId": currentUserId,
       ":title": title,
       ":minGroupSize": minGroupSize,
       ":maxGroupSize": maxGroupSize,
@@ -293,15 +300,16 @@ app.put('/surveys/publish', function (req, res) {
   let params = {
     TableName: tableName,
     Key: {
-      ownerId: currentUserId,
       surveyId
     },
     UpdateExpression: "set #survey_status = :status",
+    ConditionExpression: "ownerId = :ownerId",
     ExpressionAttributeNames: {
       "#survey_status": "status"
     },
     ExpressionAttributeValues: {
       ":status": status,
+      ":ownerId": currentUserId
     }
   };
 
@@ -346,7 +354,7 @@ app.post('/surveys/answers', function (req, res) {
       if (data.Items.length) {
         const survey = data.Items[0];
 
-        const {responses, status, surveyId, ownerId} = survey;
+        const {responses, status, surveyId} = survey;
 
         if (status !== "PUBLISHED") {
           res.statusCode = 403;
@@ -364,7 +372,6 @@ app.post('/surveys/answers', function (req, res) {
           TableName: tableName,
           Key: {
             surveyId,
-            ownerId
           },
           UpdateExpression: "SET #attrName = list_append(#attrName, :attrValue)",
           ExpressionAttributeNames: {
@@ -397,14 +404,17 @@ app.post('/surveys/answers', function (req, res) {
 
 // delete by Id
 app.delete('/surveys', function (req, res) {
-  const userId = getUserId(req);
+  const currentUserId = getUserId(req);
   const {surveyId} = req.query;
 
   let params = {
     TableName: tableName,
     Key: {
-      surveyId,
-      ownerId: userId,
+      surveyId
+    },
+    ConditionExpression: "ownerId = :ownerId",
+    ExpressionAttributeValues: {
+      ":ownerId": currentUserId
     }
   };
 

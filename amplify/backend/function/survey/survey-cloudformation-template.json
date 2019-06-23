@@ -13,9 +13,9 @@
 			"Type": "String",
 			"Default": "storagesurveyArn"
 		},
-		"authgwoupba07346bUserPoolId": {
+		"authgwoupa364eaf5UserPoolId": {
 			"Type": "String",
-			"Default": "authgwoupba07346bUserPoolId"
+			"Default": "authgwoupa364eaf5UserPoolId"
 		}
 	},
 	"Conditions": {
@@ -63,8 +63,8 @@
 						"REGION": {
 							"Ref": "AWS::Region"
 						},
-						"AUTH_GWOUPBA07346B_USERPOOLID": {
-							"Ref": "authgwoupba07346bUserPoolId"
+						"AUTH_GWOUPA364EAF5_USERPOOLID": {
+							"Ref": "authgwoupa364eaf5UserPoolId"
 						},
 						"STORAGE_SURVEY_NAME": {
 							"Ref": "storagesurveyName"
@@ -83,8 +83,8 @@
 				"Runtime": "nodejs8.10",
 				"Timeout": "25",
 				"Code": {
-					"S3Bucket": "gwoup-dev-20190621221154-deployment",
-					"S3Key": "amplify-builds/survey-1561322455-latest-build.zip"
+					"S3Bucket": "gwoup-dev-20190624000833-deployment",
+					"S3Key": "amplify-builds/survey-1561327910-latest-build.zip"
 				}
 			}
 		},
@@ -94,12 +94,12 @@
 				"RoleName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"gwoupLambdaRole8efa06ef",
+						"gwoupLambdaRoleacf526ac",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"gwoupLambdaRole8efa06ef",
+									"gwoupLambdaRoleacf526ac",
 									"-",
 									{
 										"Ref": "env"
@@ -297,7 +297,7 @@
 											},
 											":userpool/",
 											{
-												"Ref": "authgwoupba07346bUserPoolId"
+												"Ref": "authgwoupa364eaf5UserPoolId"
 											}
 										]
 									]

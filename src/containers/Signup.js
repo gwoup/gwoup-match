@@ -47,7 +47,10 @@ export default class Signup extends Component {
       try {
         const newUser = await Auth.signUp({
           username: this.state.email,
-          password: this.state.password
+          password: this.state.password,
+          attributes: {
+            family_name: this.state.family_name,
+          }
         });
         this.setState({
           newUser
@@ -105,10 +108,18 @@ export default class Signup extends Component {
   renderForm() {
     return (
       <form onSubmit={this.handleSubmit}>
+        <FormGroup controlId="family_name" bsSize="large">
+          <ControlLabel>Full name</ControlLabel>
+          <FormControl
+            autoFocus
+            type="family_name"
+            value={this.state.family_name}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
         <FormGroup controlId="email" bsSize="large">
           <ControlLabel>Email</ControlLabel>
           <FormControl
-            autoFocus
             type="email"
             value={this.state.email}
             onChange={this.handleChange}

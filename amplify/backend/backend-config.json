@@ -1,6 +1,6 @@
 {
 	"auth": {
-		"gwoupba07346b": {
+		"gwoupa364eaf5": {
 			"service": "Cognito",
 			"providerPlugin": "awscloudformation"
 		}
@@ -27,7 +27,7 @@
 				},
 				{
 					"category": "auth",
-					"resourceName": "gwoupba07346b",
+					"resourceName": "gwoupa364eaf5",
 					"attributes": [
 						"UserPoolId"
 					]

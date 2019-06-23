@@ -1,7 +1,5 @@
 {
     "tableName": "survey",
     "partitionKeyName": "surveyId",
-    "partitionKeyType": "S",
-    "sortKeyName": "ownerId",
-    "sortKeyType": "S"
+    "partitionKeyType": "S"
 }

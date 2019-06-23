@@ -12,13 +12,6 @@
             "Type": "String"
         },
         
-        "sortKeyName": {
-            "Type": "String"
-        },
-        "sortKeyType": {
-            "Type": "String"
-        },
-        
         "tableName": {
             "Type": "String"
         }
@@ -52,11 +45,6 @@
                   {
                       "AttributeName": "pin",
                       "AttributeType": "S"
-                  }  , 
-                  
-                  {
-                      "AttributeName": "status",
-                      "AttributeType": "S"
                   } 
                   
                 ],
@@ -65,11 +53,6 @@
                   {
                     "AttributeName": "surveyId",
                     "KeyType": "HASH"
-                  }  , 
-                  
-                  {
-                    "AttributeName": "ownerId",
-                    "KeyType": "RANGE"
                   } 
                   
                 ],
@@ -110,11 +93,6 @@
                             {
                                 "AttributeName": "ownerId",
                                 "KeyType": "HASH"
-                            }  , 
-                            
-                            {
-                                "AttributeName": "status",
-                                "KeyType": "RANGE"
                             } 
                             
                         ],
@@ -173,17 +151,6 @@
         "PartitionKeyType": {
             "Value": {
                 "Ref": "partitionKeyType"
-            }
-        },
-        
-        "SortKeyName": {
-            "Value": {
-                "Ref": "sortKeyName"
-            }
-        },
-        "SortKeyType": {
-            "Value": {
-                "Ref": "sortKeyType"
             }
         },
         

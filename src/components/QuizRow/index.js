@@ -17,7 +17,7 @@ export default class QuizRow extends Component {
   };
 
   render() {
-    const {surveyId, title, status, questionsNum, votesNum, pin} = this.props;
+    const {surveyId, title, status, questionsNum, votesNum, pin, minGroupSize} = this.props;
     const isVisible = this.state.isVisible ? "" : "hidden";
 
     return (
@@ -49,7 +49,7 @@ export default class QuizRow extends Component {
                 </Link>&nbsp;
               </>
             }
-            {status === "PUBLISHED" &&
+            {votesNum >= minGroupSize && status === "PUBLISHED" &&
               <Link to={`/bematched/status/${surveyId}`}>
                 <button className="btn btn-warning btn-xs">Grouping</button>
               </Link>

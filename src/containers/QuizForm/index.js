@@ -107,7 +107,8 @@ class QuizForm extends Component {
       maxGroupSize,
       preferredGroupSize,
       questions: serializeQuestionsArr(questions),
-      responses: []
+      responses: [],
+      groups: []
     };
 
     if (!isCreateOperation) {

@@ -48,7 +48,7 @@ class Surveys extends Component {
               title={obj.title}
               status={obj.status}
               questionsNum={obj.questions.length}
-              expectedNum={obj.expectedNum}
+              minGroupSize={obj.minGroupSize}
               votesNum={obj.responses.length}
               pin={obj.pin}
               surveyId={obj.surveyId}

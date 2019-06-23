@@ -242,6 +242,7 @@ app.post('/surveys', function (req, res) {
       preferredGroupSize,
       pin: getRandomKey(6),
       responses: [],
+      groups: [],
       questions,
       status: 'DRAFT',
       ownerId: currentUserId,

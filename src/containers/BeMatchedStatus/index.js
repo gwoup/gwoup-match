@@ -3,6 +3,7 @@ import React, {Component} from "react";
 import "./styles.css";
 import {getSurveyStatusById} from "../../actions/surveys";
 import {connect} from "react-redux";
+import {Link} from "react-router-dom";
 
 
 class BeMatchedStatus extends Component {
@@ -40,7 +41,7 @@ class BeMatchedStatus extends Component {
     try {
 
       const survey = await this.props.getSurveyStatusById(surveyId);
-      const {title, minGroupSize, maxGroupSize, preferredGroupSize, pin, answersNumber} = survey;
+      const {title, minGroupSize, maxGroupSize, preferredGroupSize, pin, answersNumber, status} = survey;
 
       this.setState({
         title,
@@ -48,7 +49,8 @@ class BeMatchedStatus extends Component {
         maxGroupSize,
         preferredGroupSize,
         pin,
-        answersNumber
+        answersNumber,
+        status
       });
     } catch (exception) {
       console.log(exception);
@@ -60,7 +62,7 @@ class BeMatchedStatus extends Component {
   }
 
   getStatusContent = () => {
-    const {title, pin, answersNumber} = this.state;
+    const {title, pin, answersNumber, status, surveyId} = this.state;
 
     return (
       <>
@@ -68,6 +70,11 @@ class BeMatchedStatus extends Component {
         <h3>Currently there are</h3>
         <h3 className="respondentsCounter">{answersNumber}</h3>
         <div>other students have answered</div>
+        {status === "COMPLETED" &&
+        <Link to={`/surveys/group/${surveyId}`}>
+          <button className="btn btn-success btn-group">View your group</button>
+        </Link>
+        }
       </>
     );
   };

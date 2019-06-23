@@ -47,9 +47,9 @@ class Surveys extends Component {
             <QuizRow
               title={obj.title}
               status={obj.status}
-              questionsNum={obj.questionsNum}
+              questionsNum={obj.questions.length}
               expectedNum={obj.expectedNum}
-              votesNum={obj.votesNum}
+              votesNum={obj.responses.length}
               pin={obj.pin}
               surveyId={obj.surveyId}
               key={obj.surveyId}

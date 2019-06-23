@@ -180,7 +180,7 @@ app.get('/surveys/status/:surveyId', function (req, res) {
           return;
         }
 
-        const {surveyId, title, minGroupSize, maxGroupSize, preferredGroupSize, pin} = survey;
+        const {surveyId, status, title, minGroupSize, maxGroupSize, preferredGroupSize, pin} = survey;
 
         res.json({
           surveyId,
@@ -189,6 +189,7 @@ app.get('/surveys/status/:surveyId', function (req, res) {
           maxGroupSize,
           preferredGroupSize,
           pin,
+          status,
           answersNumber: survey.responses.length
         });
       } else {

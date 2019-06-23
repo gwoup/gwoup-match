@@ -17,7 +17,7 @@ export default class QuizRow extends Component {
   };
 
   render() {
-    const {surveyId, title, status, questionsNum, expectedNum, votesNum, pin} = this.props;
+    const {surveyId, title, status, questionsNum, votesNum, pin} = this.props;
     const isVisible = this.state.isVisible ? "" : "hidden";
 
     return (
@@ -31,15 +31,29 @@ export default class QuizRow extends Component {
           <div>pin: <b>{pin}</b></div>
         </div>
         <div className="col col-lg-2">
-          <div>expected votes: {expectedNum}</div>
-          <div>available votes: {votesNum}</div>
+          <div>votes #: {votesNum}</div>
         </div>
         <div className="col col-lg-2">
-          <div className="btn-toolbar">
+          <div>
             <Link to={`/surveys/${surveyId}`}>
-              <button className="btn btn-default btn-sm">Edit</button>
-            </Link>
-            <button onClick={() => this.handleDeleteSurvey(surveyId)} className="btn btn-default btn-sm">Delete</button>
+              <button className="btn btn-default btn-xs">Edit</button>
+            </Link>&nbsp;
+            <button onClick={() => this.handleDeleteSurvey(surveyId)} className="btn btn-default btn-xs">Delete</button>
+          </div>
+
+          <div>
+            {status === "PUBLISHED" &&
+              <>
+                <Link to={`/bematched/status/${surveyId}`}>
+                  <button className="btn btn-warning btn-xs">Status</button>
+                </Link>&nbsp;
+              </>
+            }
+            {status === "PUBLISHED" &&
+              <Link to={`/bematched/status/${surveyId}`}>
+                <button className="btn btn-warning btn-xs">Grouping</button>
+              </Link>
+            }
           </div>
         </div>
       </div>

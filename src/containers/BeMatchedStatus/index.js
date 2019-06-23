@@ -12,18 +12,19 @@ class BeMatchedStatus extends Component {
     this.state = {
       pin: "",
       title: "",
-      answersNumber: 0
+      answersNumber: 0,
+      isLoading: false
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const {match: {params}} = this.props;
 
     if (params && params.surveyId) {
       const surveyId = params.surveyId;
-      this.setState({surveyId});
+      this.setState({surveyId, isLoading: true});
 
-      this.getStatusData(surveyId);
+      await this.getStatusData(surveyId);
 
       this.waitStatusUpdateTimer = setInterval(
         () => {
@@ -31,6 +32,8 @@ class BeMatchedStatus extends Component {
         }, 20000
       );
     }
+
+    this.setState({isLoading: false});
   }
 
   getStatusData = async (surveyId) => {
@@ -56,14 +59,26 @@ class BeMatchedStatus extends Component {
     clearInterval(this.waitStatusUpdateTimer);
   }
 
-  render() {
+  getStatusContent = () => {
     const {title, pin, answersNumber} = this.state;
 
     return (
-      <div className="BeMatchedStatus">
+      <>
         <h3><b>{title}</b> - pin <b>{pin}</b></h3>
         <h3>Currently there are</h3>
         <h3 className="respondentsCounter">{answersNumber}</h3>
+        <div>other students have answered</div>
+      </>
+    );
+  };
+
+  render() {
+    const {isLoading} = this.state;
+    const content = isLoading ? <h3>Loading ...</h3> : this.getStatusContent();
+
+    return (
+      <div className="BeMatchedStatus">
+        {content}
       </div>
     );
   }

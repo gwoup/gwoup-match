@@ -16,6 +16,8 @@ var storageSurveyArn = process.env.STORAGE_SURVEY_ARN
 
 Amplify Params - DO NOT EDIT */
 const AWS = require('aws-sdk');
+const cognito = new AWS.CognitoIdentityServiceProvider({apiVersion: '2016-04-18'})
+
 var express = require('express');
 var bodyParser = require('body-parser');
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
@@ -70,14 +72,22 @@ const getRandomKey = (length) => {
 
 const getUserId = (req) => {
   if (userIdPresent) {
-    console.log("cognito user identity", req.apiGateway.event.requestContext.identity);
-
     const authProvider = req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider;
     const parts = authProvider.split(':');
     return parts[parts.length - 1];
   }
 
   return demoUserId || "";
+};
+
+const getCognitoUserPoolId = (req) => {
+  if (userIdPresent) {
+    const authProvider = req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider;
+    const parts = authProvider.split(',')[0].split('/');
+    return parts[parts.length - 1];
+  }
+
+  return "";
 };
 
 // convert url string param to expected Type
@@ -294,8 +304,10 @@ app.post('/surveys/groups/:surveyId', function (req, res) {
 
         for (let i = 0; i < randomizedUserIds.length; i++) {
           let groupIndex = i % GROUPS_NUMBER;
+          const user = survey.responses.find(response => response.userId === randomizedUserIds[i]);
+
           generatedGroups[groupIndex].push({
-            'full_name': 'Bob', // TODO: add cognito details
+            full_name: user.full_name,
             userId: randomizedUserIds[i]
           });
         }
@@ -462,6 +474,20 @@ const tookPartInSurvey = (userId, responses) => {
   return responses.some(response => response.userId === userId);
 };
 
+const getUserName = async (cognitoUserPoolId, userId) => {
+  try {
+    const user = await cognito.adminGetUser({
+      UserPoolId: cognitoUserPoolId, //process.env.COGNITO_USER_POOL_ID,
+      Username: userId,
+    }).promise();
+
+    return user.UserAttributes.find(attr => attr.Name === "name").Value;
+  } catch (err) {
+    console.log('error fetching user info: ', err);
+    throw err;
+  }
+};
+
 // add answers
 app.post('/surveys/answers', function (req, res) {
   const currentUserId = getUserId(req);
@@ -481,7 +507,7 @@ app.post('/surveys/answers', function (req, res) {
     },
   };
 
-  dynamodb.query(params, (err, data) => {
+  dynamodb.query(params, async (err, data) => {
     if (err) {
       res.statusCode = 500;
       res.json({error: 'Could not find item: ' + err});
@@ -515,6 +541,7 @@ app.post('/surveys/answers', function (req, res) {
           ExpressionAttributeValues: {
             ":attrValue": [{
               "userId": currentUserId,
+              "full_name": await getUserName(getCognitoUserPoolId(req), currentUserId),
               "answers": answers
             }]
           }

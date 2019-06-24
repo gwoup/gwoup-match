@@ -1,9 +1,9 @@
 import React, {Component} from "react";
-import "./BeMatched.css";
 import {Col, ControlLabel, FormControl, FormGroup, Grid, Row, HelpBlock} from "react-bootstrap";
-import LoaderButton from "../components/LoaderButton";
-import {getPublishedSurveyByPin} from "../actions/surveys";
 import {connect} from "react-redux";
+import LoaderButton from "../../components/LoaderButton";
+import {getPublishedSurveyByPin} from "../../actions/surveys";
+import "./index.css";
 
 
 class BeMatched extends Component {
@@ -24,11 +24,16 @@ class BeMatched extends Component {
 
   handleSubmit = async event => {
     event.preventDefault();
-
     this.setState({isFetching: true});
-    const survey = await this.props.getPublishedSurveyByPin(this.state.pin.toUpperCase());
 
-    if (survey) {
+    try {
+      const result = await this.props.getPublishedSurveyByPin(this.state.pin.toUpperCase());
+      if (result instanceof "Error") {
+        throw result;
+      }
+
+      const survey = result;
+
       this.setState({
         validationState: null,
         errorMsg: null,
@@ -40,8 +45,7 @@ class BeMatched extends Component {
       } else {
         this.props.history.push('/bematched/survey');
       }
-
-    } else {
+    } catch (e) {
       this.setState({
         validationState: "error",
         errorMsg: "Survey is not available. Plz check your PIN",

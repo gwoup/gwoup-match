@@ -6,7 +6,7 @@ import Login from "./containers/Login";
 import Intro from "./containers/Intro/index";
 import Surveys from "./containers/Surveys/index";
 import QuizForm from "./containers/QuizForm";
-import BeMatched from "./containers/BeMatched";
+import BeMatched from "./containers/BeMatched/index";
 import BeMatchedBySurvey from "./containers/BeMatchedBySurvey/index";
 import BeMatchedStatus from "./containers/BeMatchedStatus/index";
 import BeMatchedGroups from "./containers/BeMatchedGroups/index";

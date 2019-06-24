@@ -136,29 +136,30 @@ export default class QuestionDateTime extends Component {
   render() {
     return (
       <>
-        <Row>
-          {QUESTION_DATE_STRUCTURE.map((dateItem, i) =>
-            <Col
-              xs={cellSize(i)} md={cellSize(i)} lg={cellSize(i)}
-              key={dateItem.id} className="questionCellHeader text-center"
-            >
-              {dateItem.title}
-            </Col>
-          )}
-        </Row>
-        {QUESTION_TIME_STRUCTURE.map(timeItem =>
-          <Row key={timeItem.id}>
+        <table width="100%">
+          <tbody>
+          <tr>
             {QUESTION_DATE_STRUCTURE.map((dateItem, i) =>
-              <Col xs={cellSize(i)} md={cellSize(i)} lg={cellSize(i)} key={dateItem.id} className="questionCellData">
-                <div className="cellLabel">{timeItem.description}</div>
-                <Checkbox
-                  onChange={(e) => this.handleChange(e, dateItem.id, timeItem.id)}
-                  checked={this.isCellChecked(dateItem.id, timeItem.id)}
-                />
-              </Col>
+              <td width="14%" key={dateItem.id} className="questionCellHeader text-center">
+                {dateItem.title}
+              </td>
             )}
-          </Row>
-        )}
+          </tr>
+          {QUESTION_TIME_STRUCTURE.map(timeItem =>
+            <tr key={timeItem.id}>
+              {QUESTION_DATE_STRUCTURE.map((dateItem, i) =>
+                <td width="14%" key={dateItem.id} className="questionCellData">
+                  <div className="cellLabel">{timeItem.description}</div>
+                  <Checkbox
+                    onChange={(e) => this.handleChange(e, dateItem.id, timeItem.id)}
+                    checked={this.isCellChecked(dateItem.id, timeItem.id)}
+                  />
+                </td>
+              )}
+            </tr>
+          )}
+          </tbody>
+        </table>
       </>
     );
   }

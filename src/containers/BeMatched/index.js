@@ -28,7 +28,6 @@ class BeMatched extends Component {
 
     try {
       const result = await this.props.getPublishedSurveyByPin(this.state.pin.toUpperCase());
-
       if (result instanceof Error) {
         throw result;
       }

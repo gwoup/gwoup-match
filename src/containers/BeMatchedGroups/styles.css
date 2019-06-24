@@ -1,8 +1,12 @@
 .BeMatchedGroups {
     padding-top: 20px;
+    text-align: center;
 }
 
 .userGroups {
     text-align: left;
+}
 
+.BeMatchedGroups h4 {
+    font-weight: bold;
 }

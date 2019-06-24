@@ -1,0 +1,8 @@
+.Intro {
+  padding-top: 30px;
+  text-align: center;
+}
+
+.Intro .badge {
+  border-radius: 0;
+}

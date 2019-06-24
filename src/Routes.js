@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import Home from "./containers/Home";
 import NotFound from "./containers/NotFound";
 import Login from "./containers/Login";
-import Match from "./containers/Match";
+import Intro from "./containers/Intro/index";
 import Surveys from "./containers/Surveys/index";
 import QuizForm from "./containers/QuizForm";
 import BeMatched from "./containers/BeMatched";
@@ -20,6 +20,7 @@ import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
 export default ({ childProps }) =>
   <Switch>
     <UnauthenticatedRoute path="/" exact component={Home} props={childProps} />
+    <AuthenticatedRoute path="/intro" exact component={Intro} props={childProps} />
     <AuthenticatedRoute path="/surveys/new" exact component={QuizForm} props={childProps} />
     <AuthenticatedRoute path="/surveys/:surveyId" component={QuizForm} props={childProps} />
     <AuthenticatedRoute path="/surveys" exact component={Surveys} props={childProps} />

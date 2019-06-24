@@ -42,18 +42,32 @@ class BeMatchedGroups extends Component {
     this.setState({isLoading: false});
   }
 
+  buildUserGroup = (group, groupNumber) => {
+    if (group.length <= 0) {
+      return;
+    }
+
+    return (<div key={groupNumber}>
+      <span>Group {groupNumber}</span>
+      {group.map(user => <b key={user.userId}>{user.full_name}</b>)}
+      <div className="separate"/>
+    </div>);
+  };
+
   getStatusContent = () => {
     const {title, groups, pin} = this.state;
+
     return (
       <>
-        <h3>Students in class</h3>
-        <h3><b>{title}</b> - pin <b>{pin}</b></h3>
-        <h4>have now been automatically grouped into the following groups based on their answers:</h4>
-        <ul className="userGroups">
-          {groups.map(group => group.map((user, i) =>
-            <li key={i}>{user.full_name}</li>
-          ))}
-        </ul>
+        <h3>
+          Students in class<br/>
+          <b>{title}</b> - pin <b>{pin}</b><br/>
+          have now been automatically grouped into the following groups<br/>
+          based on their answers:
+        </h3>
+        <div className="userGroups">
+          {groups.map((group, i) => this.buildUserGroup(group, i+1))}
+        </div>
       </>
     );
   };

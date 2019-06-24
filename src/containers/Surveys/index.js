@@ -23,6 +23,10 @@ class Surveys extends Component {
     const user = await Auth.currentAuthenticatedUser();
     const surveys = await this.props.getSurveys(user.username);
 
+    if(surveys.length === 0) {
+      this.props.history.push('/intro');
+    }
+
     this.setState({surveys, isLoading: false});
   }
 

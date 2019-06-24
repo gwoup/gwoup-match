@@ -10,7 +10,7 @@ See the License for the specific language governing permissions and limitations 
 You can access the following resource attributes as environment variables from your Lambda function
 var environment = process.env.ENV
 var region = process.env.REGION
-var authGwoupba07346bUserPoolId = process.env.AUTH_GWOUPBA07346B_USERPOOLID
+var authGwoup8f3c3da7UserPoolId = process.env.AUTH_GWOUP8F3C3DA7_USERPOOLID
 var storageSurveyName = process.env.STORAGE_SURVEY_NAME
 var storageSurveyArn = process.env.STORAGE_SURVEY_ARN
 
@@ -25,7 +25,7 @@ var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware'
 const uuidv4 = require('uuid/v4');
 
 
-AWS.config.update({region: process.env.TABLE_REGION || "us-west-2"});
+AWS.config.update({region: process.env.TABLE_REGION || "eu-west-1"});
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 let tableName = "survey";

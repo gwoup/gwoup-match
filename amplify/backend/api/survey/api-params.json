@@ -25,8 +25,8 @@
     "privacy": {
         "auth": 1,
         "unauth": 0,
-        "authRoleName": "gwoup-dev-20190624000833-authRole",
-        "unAuthRoleName": "gwoup-dev-20190624000833-unauthRole"
+        "authRoleName": "gwoup-dev-20190624162437-authRole",
+        "unAuthRoleName": "gwoup-dev-20190624162437-unauthRole"
     },
     "dependsOn": [
         {

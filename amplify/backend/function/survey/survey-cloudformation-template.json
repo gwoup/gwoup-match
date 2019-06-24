@@ -13,9 +13,9 @@
 			"Type": "String",
 			"Default": "storagesurveyArn"
 		},
-		"authgwoupa364eaf5UserPoolId": {
+		"authgwoup8f3c3da7UserPoolId": {
 			"Type": "String",
-			"Default": "authgwoupa364eaf5UserPoolId"
+			"Default": "authgwoup8f3c3da7UserPoolId"
 		}
 	},
 	"Conditions": {
@@ -63,8 +63,8 @@
 						"REGION": {
 							"Ref": "AWS::Region"
 						},
-						"AUTH_GWOUPA364EAF5_USERPOOLID": {
-							"Ref": "authgwoupa364eaf5UserPoolId"
+						"AUTH_GWOUP8F3C3DA7_USERPOOLID": {
+							"Ref": "authgwoup8f3c3da7UserPoolId"
 						},
 						"STORAGE_SURVEY_NAME": {
 							"Ref": "storagesurveyName"
@@ -83,8 +83,8 @@
 				"Runtime": "nodejs8.10",
 				"Timeout": "25",
 				"Code": {
-					"S3Bucket": "gwoup-dev-20190624000833-deployment",
-					"S3Key": "amplify-builds/survey-1561379303-latest-build.zip"
+					"S3Bucket": "gwoup-dev-20190624162437-deployment",
+					"S3Key": "amplify-builds/survey-1561385126-latest-build.zip"
 				}
 			}
 		},
@@ -94,12 +94,12 @@
 				"RoleName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"gwoupLambdaRoleacf526ac",
+						"gwoupLambdaRole8547572d",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"gwoupLambdaRoleacf526ac",
+									"gwoupLambdaRole8547572d",
 									"-",
 									{
 										"Ref": "env"
@@ -176,7 +176,7 @@
 								"dynamodb:UpdateItem",
 								"dynamodb:DeleteItem"
 							],
-							"Resource": "arn:aws:dynamodb:us-west-2:565725559538:table/survey-dev/index/*"
+							"Resource": "arn:aws:dynamodb:eu-west-1:812038253262:table/survey-dev/index/*"
 						}
 					]
 				}
@@ -297,7 +297,7 @@
 											},
 											":userpool/",
 											{
-												"Ref": "authgwoupa364eaf5UserPoolId"
+												"Ref": "authgwoup8f3c3da7UserPoolId"
 											}
 										]
 									]
@@ -332,7 +332,7 @@
 								"dynamodb:Scan",
 								"dynamodb:Query"
 							],
-							"Resource": "arn:aws:dynamodb:us-west-2:565725559538:table/survey-dev/index/*"
+							"Resource": "arn:aws:dynamodb:eu-west-1:812038253262:table/survey-dev/index/*"
 						}
 					]
 				}

@@ -15,5 +15,22 @@
                 "gwoup8f3c3da7": {}
             }
         }
+    },
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "gwoup-prod-20190624171319-authRole",
+            "UnauthRoleArn": "arn:aws:iam::812038253262:role/gwoup-prod-20190624171319-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::812038253262:role/gwoup-prod-20190624171319-authRole",
+            "Region": "eu-west-1",
+            "DeploymentBucketName": "gwoup-prod-20190624171319-deployment",
+            "UnauthRoleName": "gwoup-prod-20190624171319-unauthRole",
+            "StackName": "gwoup-prod-20190624171319",
+            "StackId": "arn:aws:cloudformation:eu-west-1:812038253262:stack/gwoup-prod-20190624171319/380f97b0-968a-11e9-982f-066324f10f26"
+        },
+        "categories": {
+            "auth": {
+                "gwoup8f3c3da7": {}
+            }
+        }
     }
 }

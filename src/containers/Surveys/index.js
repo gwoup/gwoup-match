@@ -3,7 +3,7 @@ import {Auth} from "aws-amplify";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 import QuizRow from "../../components/QuizRow/index";
-import {getSurveys, deleteSurvey} from "../../actions/surveys";
+import {getSurveys, deleteSurvey, groupingSurvey} from "../../actions/surveys";
 import {routeRefresh} from "../../utils/routes";
 import "./index.css";
 
@@ -31,6 +31,11 @@ class Surveys extends Component {
     routeRefresh(this.props.history, "/surveys");
   };
 
+  handleGrouping = async surveyId => {
+    await this.props.groupingSurvey(surveyId);
+    this.props.history.push(`/bematched/groups/${surveyId}`);
+  };
+
   render() {
     const {surveys, isLoading} = this.state;
 
@@ -54,6 +59,7 @@ class Surveys extends Component {
               surveyId={obj.surveyId}
               key={obj.surveyId}
               deleteHandler={this.handleDeleteQuiz}
+              groupingHandler={this.handleGrouping}
             />
           )}
         </div>
@@ -65,6 +71,7 @@ class Surveys extends Component {
 const mapDispatchToProps = dispatch => ({
   getSurveys: () => dispatch(getSurveys()),
   deleteSurvey: (surveyId) => dispatch(deleteSurvey(surveyId)),
+  groupingSurvey: (surveyId) => dispatch(groupingSurvey(surveyId)),
 });
 
 export default connect(

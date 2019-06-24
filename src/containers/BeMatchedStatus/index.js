@@ -71,7 +71,7 @@ class BeMatchedStatus extends Component {
         <h3 className="respondentsCounter">{answersNumber}</h3>
         <div>other students have answered</div>
         {status === "COMPLETED" &&
-        <Link to={`/surveys/group/${surveyId}`}>
+        <Link to={`/bematched/groups/${surveyId}`}>
           <button className="btn btn-success btn-group">View your group</button>
         </Link>
         }

@@ -50,9 +50,18 @@ export default class QuizRow extends Component {
               </>
             }
             {votesNum >= minGroupSize && status === "PUBLISHED" &&
-              <Link to={`/bematched/status/${surveyId}`}>
-                <button className="btn btn-warning btn-xs">Grouping</button>
-              </Link>
+              <>
+                <button className="btn btn-warning btn-xs" onClick={() => this.props.groupingHandler(surveyId)}>Make grouping</button>
+                &nbsp;
+              </>
+            }
+
+            {status === "COMPLETED" &&
+            <>
+              <Link to={`/bematched/groups/${surveyId}`}>
+                <button className="btn btn-warning btn-xs">View grouping</button>
+              </Link>&nbsp;
+            </>
             }
           </div>
         </div>

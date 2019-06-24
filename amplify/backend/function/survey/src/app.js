@@ -70,6 +70,8 @@ const getRandomKey = (length) => {
 
 const getUserId = (req) => {
   if (userIdPresent) {
+    console.log("cognito user identity", req.apiGateway.event.requestContext.identity);
+
     const authProvider = req.apiGateway.event.requestContext.identity.cognitoAuthenticationProvider;
     const parts = authProvider.split(':');
     return parts[parts.length - 1];
@@ -191,6 +193,137 @@ app.get('/surveys/status/:surveyId', function (req, res) {
           pin,
           status,
           answersNumber: survey.responses.length
+        });
+      } else {
+        res.statusCode = 404;
+        res.json({});
+      }
+    }
+  });
+});
+
+// Get groups by Id
+app.get('/surveys/groups/:surveyId', function (req, res) {
+  const currentUserId = getUserId(req);
+  const {surveyId} = req.params;
+
+  let params = {
+    TableName: tableName,
+    Key: {
+      surveyId
+    }
+  };
+
+  dynamodb.get(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not find item: ' + err});
+    } else {
+      if (data.Item) {
+        const survey = data.Item;
+        // is owner or took part in responses
+
+        if (survey.ownerId !== currentUserId && !tookPartInSurvey(currentUserId, survey.responses)) {
+          res.statusCode = 403;
+          return;
+        }
+
+        const {surveyId, status, title, groups, pin} = survey;
+
+        res.json({
+          surveyId,
+          title,
+          pin,
+          groups,
+          status,
+        });
+      } else {
+        res.statusCode = 404;
+        res.json({});
+      }
+    }
+  });
+});
+
+// create groups by Id
+app.post('/surveys/groups/:surveyId', function (req, res) {
+  const currentUserId = getUserId(req);
+  const {surveyId} = req.params;
+
+  let params = {
+    TableName: tableName,
+    Key: {
+      surveyId
+    }
+  };
+
+  dynamodb.get(params, (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({error: 'Could not find item: ' + err});
+    } else {
+      if (data.Item) {
+        const survey = data.Item;
+        // is owner or took part in responses
+
+        if (survey.ownerId !== currentUserId) {
+          res.statusCode = 403;
+          return;
+        }
+
+        if (survey.status !== "PUBLISHED") {
+          res.statusCode = 410;
+          res.json({error: "Survey has to be published"});
+          return;
+        }
+
+        if (survey.groups && survey.groups.length > 0) {
+          res.statusCode = 410;
+          res.json({error: "Groups already generated"});
+          return;
+        }
+
+        const userIds = survey.responses.map(response => response.userId);
+        const randomizedUserIds = shuffle([...userIds]);
+
+        const GROUPS_NUMBER = 3;
+        let generatedGroups = new Array(GROUPS_NUMBER);
+        for (let i = 0; i < generatedGroups.length; i++) {
+          generatedGroups[i] = [];
+        }
+
+        for (let i = 0; i < randomizedUserIds.length; i++) {
+          let groupIndex = i % GROUPS_NUMBER;
+          generatedGroups[groupIndex].push({
+            'full_name': 'Bob', // TODO: add cognito details
+            userId: randomizedUserIds[i]
+          });
+        }
+
+        let params = {
+          TableName: tableName,
+          Key: {
+            surveyId
+          },
+          UpdateExpression: "set #survey_status = :status, groups = :groups",
+          ConditionExpression: "ownerId = :ownerId",
+          ExpressionAttributeNames: {
+            "#survey_status": "status"
+          },
+          ExpressionAttributeValues: {
+            ":status": "COMPLETED",
+            ":groups": generatedGroups,
+            ":ownerId": currentUserId
+          }
+        };
+
+        dynamodb.update(params, (err, data) => {
+          if (err) {
+            res.statusCode = 500;
+            res.json({error: 'Could not publish item: ' + err});
+          } else {
+            res.json({data});
+          }
         });
       } else {
         res.statusCode = 404;
@@ -433,6 +566,25 @@ app.delete('/surveys', function (req, res) {
 app.listen(3000, function () {
   console.log("App started")
 });
+
+
+function shuffle(array) {
+  let m = array.length, t, i;
+
+  // While there remain elements to shuffle…
+  while (m) {
+
+    // Pick a remaining element…
+    i = Math.floor(Math.random() * m--);
+
+    // And swap it with the current element.
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+  }
+
+  return array;
+}
 
 // Export the app object. When executing the application local this does nothing. However,
 // to port it to AWS Lambda we will create a wrapper around that will load the app from

@@ -18,6 +18,10 @@ const Types = {
   SET_ANSWER_STATUS: "SET_ANSWER_STATUS",
   ADD_SURVEY_STATUS: "ADD_SURVEY_STATUS",
   ADD_SURVEY_STATUS_FAILURE: "ADD_SURVEY_STATUS_FAILURE",
+  GROUPING_SURVEY: "GROUPING_SURVEY",
+  GROUPING_STATUS_FAILURE: "GROUPING_STATUS_FAILURE",
+  SURVEY_GROUPS: "SURVEY_GROUPS",
+  SURVEY_GROUPS_FAILURE: "SURVEY_GROUPS_FAILURE",
 };
 
 const SurveyStatuses = {
@@ -237,6 +241,51 @@ const getSurveyStatusById = (surveyId) => {
   }
 };
 
+const groupingSurvey = (surveyId) => {
+  return async dispatch => {
+    const onSuccess = (success) => {
+      dispatch({type: Types.GROUPING_SURVEY, payload: success});
+      return success;
+    };
+
+    const onError = (error) => {
+      dispatch({type: Types.GROUPING_STATUS_FAILURE, error});
+      return error;
+    };
+
+    try {
+      const response = await API.post('survey', `/surveys/groups/${surveyId}`, {});
+
+      return onSuccess(response);
+    } catch (error) {
+      return onError(error);
+    }
+  }
+};
+
+
+const getSurveyGroups = (surveyId) => {
+  return async dispatch => {
+    const onSuccess = (success) => {
+      dispatch({type: Types.SURVEY_GROUPS, payload: success});
+      return success;
+    };
+
+    const onError = (error) => {
+      dispatch({type: Types.SURVEY_GROUPS_FAILURE, error});
+      return error;
+    };
+
+    try {
+      const response = await API.get('survey', `/surveys/groups/${surveyId}`, {});
+
+      return onSuccess(response);
+    } catch (error) {
+      return onError(error);
+    }
+  }
+};
+
 // answers validation
 const setAnswerStatus = (questionId, status) => ({
   type: Types.SET_ANSWER_STATUS,
@@ -255,6 +304,8 @@ export {
   publishSurvey,
   setAnswerStatus,
   getSurveyStatusById,
+  groupingSurvey,
+  getSurveyGroups,
   Types,
   SurveyStatuses
 };

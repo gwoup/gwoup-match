@@ -26,7 +26,7 @@
     "passwordPolicyCharacters": [],
     "requiredAttributes": [
         "email",
-        "family_name"
+        "name"
     ],
     "userpoolClientName": "gwoupaa364eaf5_app_client",
     "userpoolClientGenerateSecret": true,

@@ -181,7 +181,7 @@ Resources:
           Mutable: true
         
         -
-          Name: family_name
+          Name: name
           Required: true
           Mutable: true
         

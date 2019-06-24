@@ -49,7 +49,7 @@ export default class Signup extends Component {
           username: this.state.email,
           password: this.state.password,
           attributes: {
-            family_name: this.state.family_name,
+            name: this.state.full_name,
           }
         });
         this.setState({
@@ -108,12 +108,12 @@ export default class Signup extends Component {
   renderForm() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <FormGroup controlId="family_name" bsSize="large">
+        <FormGroup controlId="full_name" bsSize="large">
           <ControlLabel>Full name</ControlLabel>
           <FormControl
             autoFocus
-            type="family_name"
-            value={this.state.family_name}
+            type="full_name"
+            value={this.state.full_name}
             onChange={this.handleChange}
           />
         </FormGroup>

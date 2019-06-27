@@ -176,7 +176,19 @@
 								"dynamodb:UpdateItem",
 								"dynamodb:DeleteItem"
 							],
-							"Resource": "arn:aws:dynamodb:eu-west-1:812038253262:table/survey-prod/index/*"
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											{
+												"Ref": "storagesurveyArn"
+											},
+											"/index/*"
+										]
+									]
+								}
+							]
 						}
 					]
 				}
@@ -332,7 +344,19 @@
 								"dynamodb:Scan",
 								"dynamodb:Query"
 							],
-							"Resource": "arn:aws:dynamodb:eu-west-1:812038253262:table/survey-prod/index/*"
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											{
+												"Ref": "storagesurveyArn"
+											},
+											"/index/*"
+										]
+									]
+								}
+							]
 						}
 					]
 				}

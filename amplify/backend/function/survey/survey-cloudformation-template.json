@@ -84,7 +84,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "gwoup-dev-20190624162437-deployment",
-					"S3Key": "amplify-builds/survey-1561385126-latest-build.zip"
+					"S3Key": "amplify-builds/survey-1561621115-latest-build.zip"
 				}
 			}
 		},
@@ -176,7 +176,19 @@
 								"dynamodb:UpdateItem",
 								"dynamodb:DeleteItem"
 							],
-							"Resource": "arn:aws:dynamodb:eu-west-1:812038253262:table/survey-dev/index/*"
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											{
+												"Ref": "storagesurveyArn"
+											},
+											"/index/*"
+										]
+									]
+								}
+							]
 						}
 					]
 				}
@@ -332,7 +344,19 @@
 								"dynamodb:Scan",
 								"dynamodb:Query"
 							],
-							"Resource": "arn:aws:dynamodb:eu-west-1:812038253262:table/survey-dev/index/*"
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											{
+												"Ref": "storagesurveyArn"
+											},
+											"/index/*"
+										]
+									]
+								}
+							]
 						}
 					]
 				}

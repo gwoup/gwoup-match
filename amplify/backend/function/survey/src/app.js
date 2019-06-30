@@ -16,7 +16,7 @@ var storageSurveyArn = process.env.STORAGE_SURVEY_ARN
 
 Amplify Params - DO NOT EDIT */
 const AWS = require('aws-sdk');
-const cognito = new AWS.CognitoIdentityServiceProvider({apiVersion: '2016-04-18'})
+const cognito = new AWS.CognitoIdentityServiceProvider({apiVersion: '2016-04-18'});
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -25,7 +25,7 @@ var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware'
 const uuidv4 = require('uuid/v4');
 
 
-AWS.config.update({region: process.env.TABLE_REGION || "eu-west-1"});
+AWS.config.update({region: process.env.TABLE_REGION || process.env.REGION || "eu-west-1"});
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 let tableName = "survey";
@@ -98,7 +98,39 @@ const convertUrlType = (param, type) => {
     default:
       return param;
   }
-}
+};
+
+const generateUserGroups = (responses, minGroupSize, maxGroupSize, preferredGroupSize) => {
+  const userIds = responses.map(response => response.userId);
+  const randomizedUserIds = shuffle([...userIds]);
+  const usersNumber = userIds.length;
+  let GROUPS_NUMBER = 3;
+
+  // check PREFERRED
+  let preferredGroupsNum = Math.floor(usersNumber / preferredGroupSize);
+  if (preferredGroupsNum >= 2 && Math.ceil(usersNumber / preferredGroupsNum) <= maxGroupSize) {
+    GROUPS_NUMBER = preferredGroupsNum;
+  } else {
+    GROUPS_NUMBER = Math.floor(usersNumber / minGroupSize);
+  }
+
+  let generatedGroups = new Array(GROUPS_NUMBER);
+  for (let i = 0; i < generatedGroups.length; i++) {
+    generatedGroups[i] = [];
+  }
+
+  for (let i = 0; i < randomizedUserIds.length; i++) {
+    let groupIndex = i % GROUPS_NUMBER;
+    const user = responses.find(response => response.userId === randomizedUserIds[i]);
+
+    generatedGroups[groupIndex].push({
+      full_name: user.full_name,
+      userId: randomizedUserIds[i]
+    });
+  }
+
+  return generatedGroups;
+};
 
 app.get('/surveys', function (req, res) {
   const currentUserId = getUserId(req);
@@ -293,24 +325,8 @@ app.post('/surveys/groups/:surveyId', function (req, res) {
           return;
         }
 
-        const userIds = survey.responses.map(response => response.userId);
-        const randomizedUserIds = shuffle([...userIds]);
-
-        const GROUPS_NUMBER = 3;
-        let generatedGroups = new Array(GROUPS_NUMBER);
-        for (let i = 0; i < generatedGroups.length; i++) {
-          generatedGroups[i] = [];
-        }
-
-        for (let i = 0; i < randomizedUserIds.length; i++) {
-          let groupIndex = i % GROUPS_NUMBER;
-          const user = survey.responses.find(response => response.userId === randomizedUserIds[i]);
-
-          generatedGroups[groupIndex].push({
-            full_name: user.full_name,
-            userId: randomizedUserIds[i]
-          });
-        }
+        const {responses, minGroupSize, maxGroupSize, preferredGroupSize} = survey;
+        const generatedGroups = generateUserGroups(responses, minGroupSize, maxGroupSize, preferredGroupSize);
 
         let params = {
           TableName: tableName,
